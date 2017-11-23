@@ -3,11 +3,12 @@
 #define SCREEN_FPS 60.0f
 #define SCREEN_TICKS_PER_FRAME (1.0f / SCREEN_FPS)
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH 720
+#define SCREEN_HEIGHT 704
 
-const std::string MENU_BG = "MENU_BG";
+/*const std::string MENU_BG = "MENU_BG";
 const std::string PLAY_BG = "PLAY_BG";
+const std::string RANK_BG = "PLAY_BG";
 const std::string PLAY_GOLD = "PLAY_GOLD";
 const std::string PLAYER_SPRITE = "PLAYER_SPRITE";
 const std::string PLAY_TEXT_SCORE_PLAYER1 = "PLAY_TEXT_SCORE_PLAYER1";
@@ -19,6 +20,9 @@ const std::string PATH_FONT = "../../res/ttf/";
 const std::string PATH_AU = "../../res/au/";
 
 const std::string SAIYAN_80 = "SAIYAN_80";
-const std::string LUIGI_40 = "LUIGI_40";
+const std::string LUIGI_40 = "LUIGI_40";*/
 
 
+const std::string BG = "BG";
+
+const std::string PATH_IMG = "../../res/img/";

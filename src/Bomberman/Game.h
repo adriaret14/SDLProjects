@@ -1,8 +1,8 @@
 #include <string>
+#include "Escena.h"
+#include "Menu.h"
 #pragma once
-
-enum estadoActual {Running, Exit, GoTo};
-enum escenaActual {Menu, Play1, Play2, Ranking};
+enum class escenaActual { Menu, Play, Ranking, Exit };
 class Game
 {
 public:
@@ -10,7 +10,7 @@ public:
 	~Game();
 	void update();
 private:
-	estadoActual Estado;
-	escenaActual Escena;
+	escenaActual esc;
+	Escena *escena;
 };
 
