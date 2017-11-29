@@ -31,15 +31,25 @@ void Game::update()
 		case estadoActual::GoToLvl1:
 			escena->~Escena();
 			escena = new Play();
+			esc = escenaActual::Play;
 			break;
 		case estadoActual::GoToLvl2:
-
+			escena->~Escena();
+			escena = new Play();
+			esc = escenaActual::Play;
 			break;
 		case estadoActual::GoToRank:
-
+			escena->~Escena();
+			escena = new Ranking();
+			esc = escenaActual::Ranking;
 			break;
 		case estadoActual::Exit:
-
+			if (esc == escenaActual::Ranking)
+			{
+				escena->~Escena();
+				escena = new Menu();
+				esc = escenaActual::Menu;
+			}
 			break;
 		}
 	}

@@ -56,7 +56,7 @@ Menu::Menu():
 	exit.id = MENU_TEXT_BUTTON_EXIT;
 	exit.text = "Exit Game";
 	Renderer::Instance()->LoadTextureText(f.id, exit);
-	Vector2 aux5 = Renderer::Instance()->GetTextureSize(rank.id);
+	Vector2 aux5 = Renderer::Instance()->GetTextureSize(exit.id);
 	exit.w = aux5.x;
 	exit.h = aux5.y;
 	exitRect = SDL_Rect{ 720 / 2 - (exit.w / 2), 5 * 704 / 6 - (exit.h / 2), exit.w, exit.h };

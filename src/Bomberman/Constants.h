@@ -29,6 +29,7 @@ const std::string MENU_TEXT_BUTTON_PLAY2 = "MENU_TEXT_BUTTON_PLAY2";
 const std::string MENU_TEXT_BUTTON_RANK = "MENU_TEXT_BUTTON_RANK";
 const std::string MENU_TEXT_BUTTON_EXIT = "MENU_TEXT_BUTTON_EXIT";
 const std::string MENU_TEXT_BUTTON_MUTE = "MENU_TEXT_BUTTON_MUTE";
+const std::string RANKING_TEXT_BUTTON_MENU = "RANKING_TEXT_BUTTON_MENU";
 
 const std::string PATH_IMG = "../../res/img/";
 const std::string PATH_FONT = "../../res/ttf/";
