@@ -3,7 +3,7 @@
 #include <string>
 #pragma once
 
-enum estadoActual {Running, GoTo, Exit};
+enum estadoActual {Running, GoToLvl1, GoToLvl2, GoToRank, Exit};
 class Escena
 {
 public:
@@ -12,8 +12,9 @@ public:
 	virtual void update()=0;
 	virtual void draw()=0;
 	virtual void eHandler()=0;
-protected:
+
 	estadoActual Estado;
+protected:
 	SDL_Rect background;
 };
 

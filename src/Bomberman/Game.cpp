@@ -22,6 +22,26 @@ void Game::update()
 		escena->draw();
 		escena->update();
 		escena->eHandler();
+
+		switch (escena->Estado)
+		{
+		case estadoActual::Running:
+
+			break;
+		case estadoActual::GoToLvl1:
+			escena->~Escena();
+			escena = new Play();
+			break;
+		case estadoActual::GoToLvl2:
+
+			break;
+		case estadoActual::GoToRank:
+
+			break;
+		case estadoActual::Exit:
+
+			break;
+		}
 	}
 }
 
