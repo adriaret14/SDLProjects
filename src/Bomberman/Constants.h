@@ -24,12 +24,15 @@ const std::string LUIGI_40 = "LUIGI_40";*/
 
 
 const std::string BG = "BG";
+const std::string ITEMS = "ITEMS";
 const std::string MENU_TEXT_BUTTON_PLAY1 = "MENU_TEXT_BUTTON_PLAY1";
 const std::string MENU_TEXT_BUTTON_PLAY2 = "MENU_TEXT_BUTTON_PLAY2";
 const std::string MENU_TEXT_BUTTON_RANK = "MENU_TEXT_BUTTON_RANK";
 const std::string MENU_TEXT_BUTTON_EXIT = "MENU_TEXT_BUTTON_EXIT";
 const std::string MENU_TEXT_BUTTON_MUTE = "MENU_TEXT_BUTTON_MUTE";
 const std::string RANKING_TEXT_BUTTON_MENU = "RANKING_TEXT_BUTTON_MENU";
+const std::string PLAYER_1 = "PLAYER_1";
+const std::string PLAYER_2 = "PLAYER_2";
 
 const std::string PATH_IMG = "../../res/img/";
 const std::string PATH_FONT = "../../res/ttf/";
