@@ -7,16 +7,32 @@ Play::Play( int num ) :
 	p1(1, 300, 300),
 	p2(2, 400, 300)
 {
-	std::string map;
+	std::string mapPath;
 	switch (num)
 	{
 	case 1:
-		map = "Map1.xml";
+		mapPath = "Map1.xml";
 		break;
 	case 2:
-		map = "Map2.xml";
+		mapPath = "Map2.xml";
 		break;
 	}
+	int rows, cols;
+	/*
+	//TODO: Leer numero de filas y columnas del xml 'mapPath' y asignarlos a 'rows' y 'cols'.
+	mapa = new Obstaculo*[rows];
+	for (int i = 0; i < rows; i++) {
+		mapa[i] = new Obstaculo[cols + 1];
+	}
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			Obstaculo tipo;
+			//TODO: leer tipo de obstaculo de la casilla en fila i y columna j del xml 'mapPath' y asignarlo a 'tipo'.
+			mapa[i][j] = tipo;
+		}
+	}
+	*/
+
 }
 
 

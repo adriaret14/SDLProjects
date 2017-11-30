@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Matriz>
+<Matriz filas="11" columnas="13">
   <Fila indice ="0">
     <Celda indice ="0"></Celda>
     <Celda indice ="1"></Celda>
