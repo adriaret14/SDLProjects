@@ -10,6 +10,8 @@ public:
 	void update();
 	void draw();
 	void setMov( Movimiento );
+	int getX();
+	int getY();
 private:
 	int playerNum;
 	SDL_Rect pos;

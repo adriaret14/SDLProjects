@@ -16,5 +16,6 @@ public:
 	estadoActual Estado;
 protected:
 	SDL_Rect background;
+	std::unordered_map<std::string, bool> eventos;
 };
 

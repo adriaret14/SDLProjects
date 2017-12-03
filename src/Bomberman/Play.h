@@ -7,6 +7,8 @@
 #include "Bomba.h"
 #include "PowerUp.h"
 #include <iostream>
+#include <unordered_map>
+
 class Play :
 	public Escena
 {
@@ -24,5 +26,6 @@ private:
 	int rows;
 	int cols;
 	Objeto ***mapa;
+	std::string estado;
 };
 
