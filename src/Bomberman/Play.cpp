@@ -1,4 +1,9 @@
 #include "Play.h"
+#include "rapidxml.hpp"
+#include "rapidxml_iterators.hpp"
+#include "rapidxml_print.hpp"
+#include "rapidxml_utils.hpp"
+#include <sstream>
 
 
 
@@ -23,22 +28,53 @@ Play::Play( int num ) :
 		break;
 	}
 	
-	//int rows, cols;
-	/*
-	//TODO: Leer numero de filas y columnas del xml 'mapPath' y asignarlos a 'rows' y 'cols'.
-	mapa = new Obstaculo*[rows];
+	rapidxml::xml_document<> doc;
+	std::ifstream file(mapPath);
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	file.close();
+	std::string content(buffer.str());
+	doc.parse<0>(&content[0]);
+
+	rapidxml::xml_node<> *pRoot = doc.first_node();
+	rapidxml::xml_node<> *Mat = pRoot->first_node("Matriz");
+
+	//Leemos el tamaño de la matriz del mapa
+	rows = std::stoi(Mat->first_attribute("filas")->value(), nullptr);
+	cols = std::stoi(Mat->first_attribute("columnas")->value(), nullptr);
+
+	//Asignamos el espacio en memoria de la matriz del mapa
+	mapa = new Objeto**[rows];
 	for (int i = 0; i < rows; i++) {
-		mapa[i] = new Obstaculo[cols + 1];
+		mapa[i] = new Objeto*[cols + 1];
 	}
+
+	//Creamos los objetos del mapa
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
-			Obstaculo tipo;
-			//TODO: leer tipo de obstaculo de la casilla en fila i y columna j del xml 'mapPath' y asignarlo a 'tipo'.
-			mapa[i][j] = tipo;
+			rapidxml::xml_node<> *celda = Mat
+				->first_node(("Fila_" + std::to_string(i)).c_str())
+				->first_node(("Celda_" + std::to_string(j)).c_str());
+			std::string s = celda->value();
+			//std::cout << s << std::endl;
+			if (s == "dest")
+			{
+				mapa[i][j] = new Dest(i, j);
+				std::cout << "8";
+			}
+			else if (s == "nodest")
+			{
+				mapa[i][j] = new NoDest(i, j);
+				std::cout << "O";
+			}
+			else
+			{
+				mapa[i][j] = new Objeto();
+				std::cout << " ";
+			}
 		}
+		std::cout << std::endl;
 	}
-	*/
-
 }
 
 
@@ -50,6 +86,11 @@ void Play::draw()
 {
 	Renderer::Instance()->Clear();
 	Renderer::Instance()->PushImage("BG", background);
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			mapa[i][j]->draw();
+		}
+	}
 	p1.draw();
 	p2.draw();
 	Renderer::Instance()->Render();

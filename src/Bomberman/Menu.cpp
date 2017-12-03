@@ -82,7 +82,7 @@ void Menu::draw()
 
 void Menu::update()
 {
-	std::cout << "." << std::endl;
+	//std::cout << "." << std::endl;
 }
 
 void Menu::eHandler()

@@ -1,9 +1,10 @@
 #pragma once
 #include "Renderer.h"
-enum class ObjTipo { DEST, NO_DEST, PWRUP, BOMB };
+enum class ObjTipo { DEST, NO_DEST, PWRUP, BOMB, NADA };
 class Objeto
 {
 public:
+	Objeto();
 	Objeto( ObjTipo, int, int );
 	~Objeto();
 

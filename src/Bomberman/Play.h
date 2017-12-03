@@ -1,8 +1,12 @@
 #pragma once
 #include "Escena.h"
 #include "player.h"
+#include "Objeto.h"
+#include "NoDest.h"
+#include "Dest.h"
+#include "Bomba.h"
+#include "PowerUp.h"
 #include <iostream>
-enum class Obstaculo { NO_DESTRUIBLE, DESTRUIBLE_1, DESTRUIBLE_2, NONE };
 class Play :
 	public Escena
 {
@@ -17,6 +21,8 @@ public:
 private:
 	Player p1;
 	Player p2;
-	Obstaculo **mapa;
+	int rows;
+	int cols;
+	Objeto ***mapa;
 };
 

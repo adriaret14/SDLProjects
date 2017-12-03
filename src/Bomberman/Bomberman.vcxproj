@@ -115,7 +115,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Bomb.cpp" />
     <ClCompile Include="Bomba.cpp" />
     <ClCompile Include="Dest.cpp" />
     <ClCompile Include="Escena.cpp" />
@@ -132,7 +131,6 @@
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bomb.h" />
     <ClInclude Include="Bomba.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Dest.h" />
