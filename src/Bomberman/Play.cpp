@@ -7,6 +7,11 @@ Play::Play( int num ) :
 	p1(1, 300, 300),
 	p2(2, 400, 300)
 {
+	//Cargamos todas las texturas necesarias
+	Renderer::Instance()->LoadTexture(ITEMS, PATH_IMG + "items.png");
+
+
+	//Determinamos el path del xml del mapa
 	std::string mapPath;
 	switch (num)
 	{
@@ -17,7 +22,8 @@ Play::Play( int num ) :
 		mapPath = "Map2.xml";
 		break;
 	}
-	int rows, cols;
+	
+	//int rows, cols;
 	/*
 	//TODO: Leer numero de filas y columnas del xml 'mapPath' y asignarlos a 'rows' y 'cols'.
 	mapa = new Obstaculo*[rows];

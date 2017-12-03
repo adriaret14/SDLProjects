@@ -115,26 +115,40 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bomb.cpp" />
     <ClCompile Include="Bomba.cpp" />
+    <ClCompile Include="Dest.cpp" />
     <ClCompile Include="Escena.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="HelloSDL.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="NoDest.cpp" />
+    <ClCompile Include="Objeto.cpp" />
     <ClCompile Include="Play.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PowerUp.cpp" />
     <ClCompile Include="Ranking.cpp" />
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bomb.h" />
     <ClInclude Include="Bomba.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="Dest.h" />
     <ClInclude Include="Escena.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="NoDest.h" />
+    <ClInclude Include="Objeto.h" />
     <ClInclude Include="Play.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PowerUp.h" />
     <ClInclude Include="Ranking.h" />
+    <ClInclude Include="rapidxml.hpp" />
+    <ClInclude Include="rapidxml_iterators.hpp" />
+    <ClInclude Include="rapidxml_print.hpp" />
+    <ClInclude Include="rapidxml_utils.hpp" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>

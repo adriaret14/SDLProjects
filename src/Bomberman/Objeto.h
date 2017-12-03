@@ -1,11 +1,17 @@
 #pragma once
-enum class ObjTipo { NO_DESTRUIBLE, DESTRUIBLE_1, DESTRUIBLE_2, PWRUP1, PWRUP2, NONE };
+#include "Renderer.h"
+enum class ObjTipo { DEST, NO_DEST, PWRUP, BOMB };
 class Objeto
 {
 public:
-	Objeto();
+	Objeto( ObjTipo, int, int );
 	~Objeto();
 
-	
+	virtual void update();
+	void draw();
+
+	ObjTipo tipo;
+	SDL_Rect rect;
+	SDL_Rect pos;
 };
 
