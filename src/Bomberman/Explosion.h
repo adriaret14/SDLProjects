@@ -9,5 +9,9 @@ public:
 	~Explosion();
 
 	void update() override;
+
+private:
+	int dir;
+	clock_t timer;
 };
 

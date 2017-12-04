@@ -17,6 +17,7 @@ Dest::~Dest()
 
 bool Dest::hit()
 {
+	std::cout << "hit" << std::endl;
 	switch (hits) {
 	case 0:
 		rect.x += 48;

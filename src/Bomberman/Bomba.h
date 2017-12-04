@@ -10,5 +10,8 @@ public:
 	~Bomba();
 	int getOwner() override;
 	void update() override;
+
+private:
+	clock_t timer;
 };
 

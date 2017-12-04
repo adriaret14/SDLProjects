@@ -26,7 +26,7 @@ public:
 private:
 	MovCheck playerMovementCheck(Movimiento, Player);
 	MovCheck bombPlacementCheck(Movimiento, Player);
-	std::vector<int> generateExpsVector(int, int);
+	std::vector<std::vector<int>> generateExplosionVector(int, int);
 	Objeto* getAdjCell(int, int, int, int);
 	Player p1;
 	std::vector<int> b1;

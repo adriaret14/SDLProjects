@@ -146,26 +146,59 @@ void Play::update()
 		{
 			mapa[b1[0]][b2[1]]->~Objeto();
 			mapa[b1[0]][b1[1]] = new Explosion( b1[0], b1[1], Movimiento::NONE, false, 1);
-			std::vector<int> exps = generateExpsVector(b1[0], b1[1]);
-			for (int n = 1; n <= exps[0]; n++)
+			std::vector<std::vector<int>> exps = generateExplosionVector(b1[0], b1[1]);
+			for (int n = 1; n <= exps[0][0]; n++)
 			{
 				mapa[b1[0]][b1[1] - n]->~Objeto();
-				mapa[b1[0]][b1[1] - n] = new Explosion(b1[0], b1[1] - n, Movimiento::UP, n == exps[0], 1);
+				mapa[b1[0]][b1[1] - n] = new Explosion(b1[0], b1[1] - n, Movimiento::UP, (n == exps[0][0] && exps[1][0] == -1), 1);
 			}
-			for (int n = 1; n <= exps[1]; n++)
+			for (int n = 1; n <= exps[0][1]; n++)
 			{
 				mapa[b1[0]][b1[1] + n]->~Objeto();
-				mapa[b1[0]][b1[1] + n] = new Explosion(b1[0], b1[1] + n, Movimiento::DOWN, n == exps[1], 1);
+				mapa[b1[0]][b1[1] + n] = new Explosion(b1[0], b1[1] + n, Movimiento::DOWN, (n == exps[0][1] && exps[1][1] == -1), 1);
 			}
-			for (int n = 1; n <= exps[2]; n++)
+			for (int n = 1; n <= exps[0][2]; n++)
 			{
 				mapa[b1[0] - n][b1[1]]->~Objeto();
-				mapa[b1[0] - n][b1[1]] = new Explosion(b1[0] - n, b1[1], Movimiento::LEFT, n == exps[2], 1);
+				mapa[b1[0] - n][b1[1]] = new Explosion(b1[0] - n, b1[1], Movimiento::LEFT, (n == exps[0][2] && exps[1][2] == -1), 1);
 			}
-			for (int n = 1; n <= exps[3]; n++)
+			for (int n = 1; n <= exps[0][3]; n++)
 			{
 				mapa[b1[0] + n][b1[1]]->~Objeto();
-				mapa[b1[0] + n][b1[1]] = new Explosion(b1[0] + n, b1[1], Movimiento::RIGHT, n == exps[3], 1);
+				mapa[b1[0] + n][b1[1]] = new Explosion(b1[0] + n, b1[1], Movimiento::RIGHT, (n == exps[0][3] && exps[1][3] == -1), 1);
+			}
+			std::cout << exps[1][0] << " " << exps[1][1] << " " << exps[1][2] << " " << exps[1][3] << std::endl;
+			if (exps[1][0] != -1)
+			{
+				if (mapa[b1[0]][b1[1] - exps[1][0]]->hit())
+				{
+					mapa[b1[0]][b1[1] - exps[1][0]]->~Objeto();
+					mapa[b1[0]][b1[1] - exps[1][0]] = new Objeto();
+				}
+			}
+			if (exps[1][1] != -1)
+			{
+				if (mapa[b1[0]][b1[1] + exps[1][1]]->hit())
+				{
+					mapa[b1[0]][b1[1] + exps[1][1]]->~Objeto();
+					mapa[b1[0]][b1[1] + exps[1][1]] = new Objeto();
+				}
+			}
+			if (exps[1][2] != -1)
+			{
+				if (mapa[b1[0] - exps[1][2]][b1[1]]->hit())
+				{
+					mapa[b1[0] - exps[1][2]][b1[1]]->~Objeto();
+					mapa[b1[0] - exps[1][2]][b1[1]] = new Objeto();
+				}
+			}
+			if (exps[1][3] != -1)
+			{
+				if (mapa[b1[0] + exps[1][3]][b1[1]]->hit())
+				{
+					mapa[b1[0] + exps[1][3]][b1[1]]->~Objeto();
+					mapa[b1[0] + exps[1][3]][b1[1]] = new Objeto();
+				}
 			}
 			p1.bomb = false;
 		}
@@ -736,13 +769,27 @@ MovCheck Play::bombPlacementCheck(Movimiento m, Player p)
 	case Movimiento::DOWN:
 		if ((p.getX() - BORDER_LEFT) % CELLW == 0)
 		{
-			if (getAdjCell(p.getX(), p.getY(), 0, 1)->collision)
+			if ((p.getY() - BORDER_TOP) % CELLH == 0)
 			{
-				return MovCheck::RED;
+				if (getAdjCell(p.getX(), p.getY(), 0, 1)->collision)
+				{
+					return MovCheck::RED;
+				}
+				else
+				{
+					return MovCheck::GREEN;
+				}
 			}
 			else
 			{
-				return MovCheck::GREEN;
+				if (getAdjCell(p.getX(), p.getY(), 0, 2)->collision)
+				{
+					return MovCheck::RED;
+				}
+				else
+				{
+					return MovCheck::GREEN;
+				}
 			}
 		}
 		else
@@ -820,10 +867,21 @@ MovCheck Play::bombPlacementCheck(Movimiento m, Player p)
 	case Movimiento::RIGHT:
 		if ((p.getY() - BORDER_TOP) % CELLH == 0)
 		{
-			if (!getAdjCell(p.getX(), p.getY(), 1, 0)->collision)
-				return MovCheck::GREEN;
+			if ((p.getX() - BORDER_LEFT) % CELLW == 0)
+			{
+				if (!getAdjCell(p.getX(), p.getY(), 1, 0)->collision)
+					return MovCheck::GREEN;
+				else
+					return MovCheck::RED;
+			}
 			else
-				return MovCheck::RED;
+			{
+				if (!getAdjCell(p.getX(), p.getY(), 2, 0)->collision)
+					return MovCheck::GREEN;
+				else
+					return MovCheck::RED;
+			}
+			
 		}
 		else
 		{
@@ -863,77 +921,143 @@ MovCheck Play::bombPlacementCheck(Movimiento m, Player p)
 	}
 }
 
-std::vector<int> Play::generateExpsVector(int i, int j)
+std::vector<std::vector<int>> Play::generateExplosionVector(int i, int j)
 {
 	bool pwrup = false;
-	std::vector<int> exps(4, 0);
+	std::vector<std::vector<int>> exps;
+	exps.push_back(std::vector<int>(4, 0));
+	exps.push_back(std::vector<int>(4, -1));
 	//UP
 	if (!mapa[i][j - 1]->collision)
 	{
-		exps[0]++;
+		exps[0][0]++;
 		if (!mapa[i][j - 2]->collision)
 		{
-			exps[0]++;
+			exps[0][0]++;
 			if (pwrup && !mapa[i][j - 3]->collision)
 			{
-				exps[0]++;
+				exps[0][0]++;
 				if (!mapa[i][j - 4]->collision)
 				{
-					exps[0]++;
+					exps[0][0]++;
+				}
+				else if (mapa[i][j - 4]->tipo == ObjTipo::DEST)
+				{
+					exps[1][0] = 4;
 				}
 			}
+			else if (pwrup && mapa[i][j - 3]->tipo == ObjTipo::DEST)
+			{
+				exps[1][0] = 3;
+			}
 		}
+		else if (mapa[i][j - 2]->tipo == ObjTipo::DEST)
+		{
+			exps[1][0] = 2;
+		}
+	}
+	else if (mapa[i][j - 1]->tipo == ObjTipo::DEST)
+	{
+		exps[1][0] = 1;
 	}
 	//DOWN
 	if (!mapa[i][j + 1]->collision)
 	{
-		exps[1]++;
+		exps[0][1]++;
 		if (!mapa[i][j + 2]->collision)
 		{
-			exps[1]++;
+			exps[0][1]++;
 			if (pwrup && !mapa[i][j + 3]->collision)
 			{
-				exps[1]++;
+				exps[0][1]++;
 				if (!mapa[i][j + 4]->collision)
 				{
-					exps[1]++;
+					exps[0][1]++;
+				}
+				else if (mapa[i][j + 4]->tipo == ObjTipo::DEST)
+				{
+					exps[1][1] = 4;
 				}
 			}
+			else if (pwrup && mapa[i][j + 3]->tipo == ObjTipo::DEST)
+			{
+				exps[1][1] = 3;
+			}
 		}
+		else if (mapa[i][j + 2]->tipo == ObjTipo::DEST)
+		{
+			exps[1][1] = 2;
+		}
+	}
+	else if (mapa[i][j + 1]->tipo == ObjTipo::DEST)
+	{
+		exps[1][1] = 1;
 	}
 	//LEFT
 	if (!mapa[i - 1][j]->collision)
 	{
-		exps[2]++;
+		exps[0][2]++;
 		if (!mapa[i - 2][j]->collision)
 		{
-			exps[2]++;
+			exps[0][2]++;
 			if (pwrup && !mapa[i - 3][j]->collision)
 			{
-				exps[2]++;
+				exps[0][2]++;
 				if (!mapa[i - 4][j]->collision)
 				{
-					exps[2]++;
+					exps[0][2]++;
+				}
+				else if (mapa[i - 4][j]->tipo == ObjTipo::DEST)
+				{
+					exps[1][2] = 4;
 				}
 			}
+			else if (mapa[i - 3][j]->tipo == ObjTipo::DEST)
+			{
+				exps[1][2] = 3;
+			}
 		}
+		else if (mapa[i - 2][j]->tipo == ObjTipo::DEST)
+		{
+			exps[1][2] = 2;
+		}
+	}
+	else if (mapa[i - 1][j]->tipo == ObjTipo::DEST)
+	{
+		exps[1][2] = 1;
 	}
 	//RIGHT
 	if (!mapa[i + 1][j]->collision)
 	{
-		exps[3]++;
+		exps[0][3]++;
 		if (!mapa[i + 2][j]->collision)
 		{
-			exps[3]++;
+			exps[0][3]++;
 			if (pwrup && !mapa[i + 3][j]->collision)
 			{
-				exps[3]++;
+				exps[0][3]++;
 				if (!mapa[i + 4][j]->collision)
 				{
-					exps[3]++;
+					exps[0][3]++;
+				}
+				else if (mapa[i + 4][j]->tipo == ObjTipo::DEST)
+				{
+					exps[1][3] = 4;
 				}
 			}
+			else if (mapa[i + 3][j]->tipo == ObjTipo::DEST)
+			{
+				exps[1][3] = 3;
+			}
 		}
+		else if (mapa[i + 2][j]->tipo == ObjTipo::DEST)
+		{
+			exps[1][3] = 2;
+		}
+	}
+	else if (mapa[i + 1][j]->tipo == ObjTipo::DEST)
+	{
+		exps[1][3] = 1;
 	}
 	return exps;
 }

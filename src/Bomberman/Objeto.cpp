@@ -7,7 +7,8 @@ Objeto::Objeto() :
 
 Objeto::Objeto(ObjTipo t, int i, int j, bool c) :
 	tipo(t),
-	collision(c)
+	collision(c),
+	boom(false)
 {
 	pos.x = BORDER_LEFT + i * CELLW;
 	pos.y = BORDER_TOP + j * CELLH;

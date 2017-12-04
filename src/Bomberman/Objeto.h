@@ -1,6 +1,7 @@
 #pragma once
 #include "Renderer.h"
 #include <time.h>
+#include <iostream>
 enum class ObjTipo { DEST, NO_DEST, PWRUP, BOMB, EXP, NADA };
 class Objeto
 {
@@ -22,12 +23,9 @@ public:
 	virtual bool hit();
 	virtual int powerup();
 
-	//Bomb / Explosion
 	bool boom;
 	int owner;
 	virtual int getOwner();
-	clock_t timer;
-	int dir;
 
 	//PowerUp
 	int pwr;
