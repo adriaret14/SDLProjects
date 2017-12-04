@@ -203,6 +203,70 @@ void Play::update()
 			p1.bomb = false;
 		}
 	}
+	if (p2.bomb)
+	{
+		mapa[b2[0]][b2[1]]->update();
+		if (mapa[b2[0]][b2[1]]->boom)
+		{
+			mapa[b2[0]][b2[1]]->~Objeto();
+			mapa[b2[0]][b2[1]] = new Explosion(b2[0], b2[1], Movimiento::NONE, false, 1);
+			std::vector<std::vector<int>> exps = generateExplosionVector(b2[0], b2[1]);
+			for (int n = 1; n <= exps[0][0]; n++)
+			{
+				mapa[b2[0]][b2[1] - n]->~Objeto();
+				mapa[b2[0]][b2[1] - n] = new Explosion(b2[0], b2[1] - n, Movimiento::UP, (n == exps[0][0] && exps[1][0] == -1), 1);
+			}
+			for (int n = 1; n <= exps[0][1]; n++)
+			{
+				mapa[b2[0]][b2[1] + n]->~Objeto();
+				mapa[b2[0]][b2[1] + n] = new Explosion(b2[0], b2[1] + n, Movimiento::DOWN, (n == exps[0][1] && exps[1][1] == -1), 1);
+			}
+			for (int n = 1; n <= exps[0][2]; n++)
+			{
+				mapa[b2[0] - n][b2[1]]->~Objeto();
+				mapa[b2[0] - n][b2[1]] = new Explosion(b2[0] - n, b2[1], Movimiento::LEFT, (n == exps[0][2] && exps[1][2] == -1), 1);
+			}
+			for (int n = 1; n <= exps[0][3]; n++)
+			{
+				mapa[b2[0] + n][b2[1]]->~Objeto();
+				mapa[b2[0] + n][b2[1]] = new Explosion(b2[0] + n, b2[1], Movimiento::RIGHT, (n == exps[0][3] && exps[1][3] == -1), 1);
+			}
+			std::cout << exps[1][0] << " " << exps[1][1] << " " << exps[1][2] << " " << exps[1][3] << std::endl;
+			if (exps[1][0] != -1)
+			{
+				if (mapa[b2[0]][b2[1] - exps[1][0]]->hit())
+				{
+					mapa[b2[0]][b2[1] - exps[1][0]]->~Objeto();
+					mapa[b2[0]][b2[1] - exps[1][0]] = new Objeto();
+				}
+			}
+			if (exps[1][1] != -1)
+			{
+				if (mapa[b2[0]][b2[1] + exps[1][1]]->hit())
+				{
+					mapa[b2[0]][b2[1] + exps[1][1]]->~Objeto();
+					mapa[b2[0]][b2[1] + exps[1][1]] = new Objeto();
+				}
+			}
+			if (exps[1][2] != -1)
+			{
+				if (mapa[b2[0] - exps[1][2]][b2[1]]->hit())
+				{
+					mapa[b2[0] - exps[1][2]][b2[1]]->~Objeto();
+					mapa[b2[0] - exps[1][2]][b2[1]] = new Objeto();
+				}
+			}
+			if (exps[1][3] != -1)
+			{
+				if (mapa[b2[0] + exps[1][3]][b2[1]]->hit())
+				{
+					mapa[b2[0] + exps[1][3]][b2[1]]->~Objeto();
+					mapa[b2[0] + exps[1][3]][b2[1]] = new Objeto();
+				}
+			}
+			p2.bomb = false;
+		}
+	}
 	if (eventos["w"])
 	{
 		MovCheck c = playerMovementCheck(Movimiento::UP, p1);
@@ -450,7 +514,78 @@ void Play::update()
 	}
 	if (eventos["rctrl"])
 	{
-
+		if (!p2.bomb)
+		{
+			if (bombPlacementCheck(p2.getLastMov(), p2) == MovCheck::GREEN)
+			{
+				std::cout << "GREEN" << std::endl;
+				int i, j;
+				switch (p2.getLastMov())
+				{
+				case Movimiento::UP:
+					if ((p2.getX() - BORDER_LEFT) % CELLW >= CELLW - TOL)
+					{
+						i = (p2.getX() - BORDER_LEFT - (p2.getX() - BORDER_LEFT) % CELLW) / CELLW + 1;
+					}
+					else
+					{
+						i = (p2.getX() - BORDER_LEFT - (p2.getX() - BORDER_LEFT) % CELLW) / CELLW;
+					}
+					j = (p2.getY() - BORDER_TOP - (p2.getY() - BORDER_TOP) % CELLH) / CELLH - 1;
+					break;
+				case Movimiento::DOWN:
+					if ((p2.getX() - BORDER_LEFT) % CELLW >= CELLW - TOL)
+					{
+						i = (p2.getX() - BORDER_LEFT - (p2.getX() - BORDER_LEFT) % CELLW) / CELLW + 1;
+					}
+					else
+					{
+						i = (p2.getX() - BORDER_LEFT - (p2.getX() - BORDER_LEFT) % CELLW) / CELLW;
+					}
+					if ((p2.getY() - BORDER_TOP) % CELLH == 0)
+					{
+						j = (p2.getY() - BORDER_TOP - (p2.getY() - BORDER_TOP) % CELLH) / CELLH + 1;
+					}
+					else
+					{
+						j = (p2.getY() - BORDER_TOP - (p2.getY() - BORDER_TOP) % CELLH) / CELLH + 2;
+					}
+					break;
+				case Movimiento::LEFT:
+					i = (p2.getX() - BORDER_LEFT - (p2.getX() - BORDER_LEFT) % CELLW) / CELLW - 1;
+					if ((p2.getY() - BORDER_TOP) % CELLH >= CELLH - TOL)
+					{
+						j = (p2.getY() - BORDER_TOP - (p2.getY() - BORDER_TOP) % CELLH) / CELLH + 1;
+					}
+					else
+					{
+						j = (p2.getY() - BORDER_TOP - (p2.getY() - BORDER_TOP) % CELLH) / CELLH;
+					}
+					break;
+				case Movimiento::RIGHT:
+					if ((p2.getX() - BORDER_LEFT) % CELLW == 0)
+					{
+						i = (p2.getX() - BORDER_LEFT - (p2.getX() - BORDER_LEFT) % CELLW) / CELLW + 1;
+					}
+					else
+					{
+						i = (p2.getX() - BORDER_LEFT - (p2.getX() - BORDER_LEFT) % CELLW) / CELLW + 2;
+					}
+					if ((p2.getY() - BORDER_TOP) % CELLH >= CELLH - TOL)
+					{
+						j = (p2.getY() - BORDER_TOP - (p2.getY() - BORDER_TOP) % CELLH) / CELLH + 1;
+					}
+					else
+					{
+						j = (p2.getY() - BORDER_TOP - (p2.getY() - BORDER_TOP) % CELLH) / CELLH;
+					}
+					break;
+				}
+				mapa[i][j]->~Objeto();
+				mapa[i][j] = p2.spawnBomba(i, j);
+				b2[0] = i; b2[1] = j;
+			}
+		}
 	}
 
 	/*
