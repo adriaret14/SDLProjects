@@ -179,7 +179,7 @@ void Player::setCorrection(bool b)
 Bomba * Player::spawnBomba(int i, int j)
 {
 	bomb = true;
-	return new Bomba(i, j, playerNum);
+	return new Bomba(i, j);
 }
 
 

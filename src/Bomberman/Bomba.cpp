@@ -1,9 +1,8 @@
 #include "Bomba.h"
 
-Bomba::Bomba( int i, int j, int n):
+Bomba::Bomba( int i, int j):
 	Objeto(ObjTipo::BOMB, i, j, true)
 {
-	owner = n;
 	rect.x = 0;
 	rect.y = 48;
 	timer = clock();
@@ -12,11 +11,6 @@ Bomba::Bomba( int i, int j, int n):
 
 Bomba::~Bomba()
 {
-}
-
-int Bomba::getOwner()
-{
-	return owner;
 }
 
 void Bomba::update()

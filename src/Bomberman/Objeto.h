@@ -24,8 +24,6 @@ public:
 	virtual int powerup();
 
 	bool boom;
-	int owner;
-	virtual int getOwner();
 
 	//PowerUp
 	int pwr;

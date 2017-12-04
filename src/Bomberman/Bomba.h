@@ -6,9 +6,8 @@
 class Bomba : public Objeto
 {
 public:
-	Bomba( int, int, int );
+	Bomba(int, int);
 	~Bomba();
-	int getOwner() override;
 	void update() override;
 
 private:
