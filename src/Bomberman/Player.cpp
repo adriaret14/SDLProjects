@@ -5,7 +5,8 @@
 Player::Player(int n, int x, int y):
 	playerNum(n),
 	dir(1),
-	mov(Movimiento::NONE)
+	mov(Movimiento::NONE),
+	correction(false)
 {
 	std::string ID;
 	std::string path;
@@ -25,8 +26,8 @@ Player::Player(int n, int x, int y):
 	pos.y = y;
 	rect.x = 48;
 	rect.y = 96;
-	pos.w = rect.w = 48;
-	pos.h = rect.h = 48;
+	pos.w = rect.w = CELLW;
+	pos.h = rect.h = CELLH;
 }
 
 
@@ -44,27 +45,72 @@ void Player::update()
 	switch (mov)
 	{
 	case Movimiento::UP:
-		pos.y -= 5;
+		pos.y -= 4;
 		rect.y = 0;
 		moviendo = true;
 		break;
 	case Movimiento::DOWN:
-		pos.y += 5;
+		pos.y += 4;
 		rect.y = 96;
 		moviendo = true;
 		break;
 	case Movimiento::LEFT:
-		pos.x -= 5;
+		pos.x -= 4;
 		rect.y = 48;
 		moviendo = true;
 		break;
 	case Movimiento::RIGHT:
-		pos.x += 5;
+		pos.x += 4;
 		rect.y = 144;
 		moviendo = true;
 		break;
 	case Movimiento::NONE:
-		moviendo = false;
+		if (correction)
+		{
+			switch (corrDir)
+			{
+			case Movimiento::UP:
+				if ((pos.x - BORDER_LEFT) % CELLW <= TOL)
+					pos.x -= 2;
+				else if ((pos.x - BORDER_LEFT) % CELLW >= CELLW - TOL)
+					pos.x += 2;
+				rect.y = 0;
+				moviendo = true;
+				break;
+			case Movimiento::DOWN:
+				if ((pos.x - BORDER_LEFT) % CELLW <= TOL)
+					pos.x -= 2;
+				else if ((pos.x - BORDER_LEFT) % CELLW >= CELLW - TOL)
+					pos.x += 2;
+				pos.y += 4;
+				rect.y = 96;
+				moviendo = true;
+				break;
+			case Movimiento::LEFT:
+				if ((pos.y - BORDER_TOP) % CELLH <= TOL)
+					pos.y -= 2;
+				else if ((pos.y - BORDER_TOP) % CELLH >= CELLH - TOL)
+					pos.y += 2;
+				rect.y = 48;
+				moviendo = true;
+				break;
+			case Movimiento::RIGHT:
+				if ((pos.y - BORDER_TOP) % CELLH <= TOL)
+					pos.y -= 2;
+				else if ((pos.y - BORDER_TOP) % CELLH >= CELLH - TOL)
+					pos.y += 2;
+				rect.y = 144;
+				moviendo = true;
+				break;
+			case Movimiento::NONE:
+				moviendo = false;
+				break;
+			}
+		}
+		else
+		{
+			moviendo = false;
+		}
 		break;
 	}
 	if (moviendo)
@@ -93,3 +139,25 @@ void Player::setMov( Movimiento m )
 {
 	mov = m;
 }
+
+void Player::setCorrDir(Movimiento m)
+{
+	corrDir = m;
+}
+
+int Player::getX()
+{
+	return pos.x;
+}
+
+int Player::getY()
+{
+	return pos.y;
+}
+
+void Player::setCorrection(bool b)
+{
+	correction = b;
+}
+
+

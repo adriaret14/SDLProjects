@@ -6,6 +6,16 @@
 #define SCREEN_WIDTH 720
 #define SCREEN_HEIGHT 704
 
+#define CELLW 48
+#define CELLH 48
+
+#define TOL 12
+
+#define BORDER_LEFT 0
+#define BORDER_RIGHT 0
+#define BORDER_TOP 80
+#define BORDER_BOT 0
+
 /*const std::string MENU_BG = "MENU_BG";
 const std::string PLAY_BG = "PLAY_BG";
 const std::string RANK_BG = "PLAY_BG";

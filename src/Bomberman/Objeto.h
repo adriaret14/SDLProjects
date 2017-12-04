@@ -5,7 +5,8 @@ class Objeto
 {
 public:
 	Objeto();
-	Objeto( ObjTipo, int, int );
+	Objeto( ObjTipo, int, int, bool );
+	Objeto(ObjTipo, int, int);
 	~Objeto();
 
 	virtual void update();
@@ -14,5 +15,7 @@ public:
 	ObjTipo tipo;
 	SDL_Rect rect;
 	SDL_Rect pos;
+
+	bool collision;
 };
 

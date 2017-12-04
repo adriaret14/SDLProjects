@@ -9,6 +9,8 @@
 #include <iostream>
 #include <unordered_map>
 
+enum class MovCheck {RED, GREEN, CORRECTION};
+
 class Play :
 	public Escena
 {
@@ -21,6 +23,8 @@ public:
 	void eHandler() override;
 
 private:
+	MovCheck playerMovementCheck(Movimiento, Player);
+	Objeto* getAdjCell(int, int, int, int);
 	Player p1;
 	Player p2;
 	int rows;

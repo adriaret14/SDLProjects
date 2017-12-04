@@ -10,8 +10,8 @@
 Play::Play( int num ) :
 	Escena::Escena(720, 704),
 	estado(""),
-	p1(1, 48 + 1 * 48, 128 + 1 * 48),
-	p2(2, 48 + 11 * 48, 128 + 9 * 48)
+	p1(1, BORDER_LEFT + 2 * CELLW, BORDER_TOP + 2 * CELLH),
+	p2(2, BORDER_LEFT + 12 * CELLW, BORDER_TOP + 10 * CELLH)
 {
 	//Cargamos todas las texturas necesarias
 	Renderer::Instance()->LoadTexture(ITEMS, PATH_IMG + "items.png");
@@ -45,16 +45,16 @@ Play::Play( int num ) :
 	cols = std::stoi(Mat->first_attribute("columnas")->value(), nullptr);
 
 	//Asignamos el espacio en memoria de la matriz del mapa
-	mapa = new Objeto**[rows];
-	for (int i = 0; i < rows; i++) {
-		mapa[i] = new Objeto*[cols + 1];
+	mapa = new Objeto**[cols];
+	for (int i = 0; i < cols; i++) {
+		mapa[i] = new Objeto*[rows + 1];
 	}
 
 	//Creamos los objetos del mapa
-	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < cols; j++) {
+	for (int i = 0; i < cols; i++) {
+		for (int j = 0; j < rows; j++) {
 			rapidxml::xml_node<> *celda = Mat
-				->first_node(("Fila_" + std::to_string(i)).c_str())
+				->first_node(("Columna_" + std::to_string(i)).c_str())
 				->first_node(("Celda_" + std::to_string(j)).c_str());
 			std::string s = celda->value();
 			//std::cout << s << std::endl;
@@ -102,8 +102,8 @@ void Play::draw()
 {
 	Renderer::Instance()->Clear();
 	Renderer::Instance()->PushImage("BG", background);
-	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < cols; j++) {
+	for (int i = 0; i < cols; i++) {
+		for (int j = 0; j < rows; j++) {
 			mapa[i][j]->draw();
 		}
 	}
@@ -116,45 +116,176 @@ void Play::update()
 {
 	if (eventos["w"])
 	{
-		p1.setMov(Movimiento::UP);
+		MovCheck c = playerMovementCheck(Movimiento::UP, p1);
+		switch (c)
+		{
+		case MovCheck::GREEN:
+			p1.setCorrection(false);
+			p1.setMov(Movimiento::UP);
+			break;
+		case MovCheck::RED:
+			p1.setCorrection(false);
+			p1.setMov(Movimiento::NONE);
+			break;
+		case MovCheck::CORRECTION:
+			p1.setCorrection(true);
+			p1.setMov(Movimiento::NONE);
+			p1.setCorrDir(Movimiento::UP);
+			break;
+		}
 	}
 	else if (eventos["s"])
 	{
-		p1.setMov(Movimiento::DOWN);
+		MovCheck c = playerMovementCheck(Movimiento::DOWN, p1);
+		switch (c)
+		{
+		case MovCheck::GREEN:
+			p1.setCorrection(false);
+			p1.setMov(Movimiento::DOWN);
+			break;
+		case MovCheck::RED:
+			p1.setCorrection(false);
+			p1.setMov(Movimiento::NONE);
+			break;
+		case MovCheck::CORRECTION:
+			p1.setCorrection(true);
+			p1.setMov(Movimiento::NONE);
+			p1.setCorrDir(Movimiento::DOWN);
+			break;
+		}
 	}
 	else if (eventos["a"])
 	{
-		p1.setMov(Movimiento::LEFT);
+		MovCheck c = playerMovementCheck(Movimiento::LEFT, p1);
+		switch (c)
+		{
+		case MovCheck::GREEN:
+			p1.setCorrection(false);
+			p1.setMov(Movimiento::LEFT);
+			break;
+		case MovCheck::RED:
+			p1.setCorrection(false);
+			p1.setMov(Movimiento::NONE);
+			break;
+		case MovCheck::CORRECTION:
+			p1.setCorrection(true);
+			p1.setMov(Movimiento::NONE);
+			p1.setCorrDir(Movimiento::LEFT);
+			break;
+		}
 	}
 	else if (eventos["d"])
 	{
-		p1.setMov(Movimiento::RIGHT);
+		MovCheck c = playerMovementCheck(Movimiento::RIGHT, p1);
+		switch (c)
+		{
+		case MovCheck::GREEN:
+			p1.setCorrection(false);
+			p1.setMov(Movimiento::RIGHT);
+			break;
+		case MovCheck::RED:
+			p1.setCorrection(false);
+			p1.setMov(Movimiento::NONE);
+			break;
+		case MovCheck::CORRECTION:
+			p1.setCorrection(true);
+			p1.setMov(Movimiento::NONE);
+			p1.setCorrDir(Movimiento::RIGHT);
+			break;
+		}
 	}
 	else
 	{
+		p1.setCorrection(false);
 		p1.setMov(Movimiento::NONE);
 	}
 	if (eventos["up"])
 	{
-		p2.setMov(Movimiento::UP);
+		MovCheck c = playerMovementCheck(Movimiento::UP, p2);
+		switch (c)
+		{
+		case MovCheck::GREEN:
+			p2.setCorrection(false);
+			p2.setMov(Movimiento::UP);
+			break;
+		case MovCheck::RED:
+			p2.setCorrection(false);
+			p2.setMov(Movimiento::NONE);
+			break;
+		case MovCheck::CORRECTION:
+			p2.setCorrection(true);
+			p2.setMov(Movimiento::NONE);
+			p2.setCorrDir(Movimiento::UP);
+			break;
+		}
 	}
 	else if (eventos["down"])
 	{
-		p2.setMov(Movimiento::DOWN);
+		MovCheck c = playerMovementCheck(Movimiento::DOWN, p2);
+		switch (c)
+		{
+		case MovCheck::GREEN:
+			p2.setCorrection(false);
+			p2.setMov(Movimiento::DOWN);
+			break;
+		case MovCheck::RED:
+			p2.setCorrection(false);
+			p2.setMov(Movimiento::NONE);
+			break;
+		case MovCheck::CORRECTION:
+			p2.setCorrection(true);
+			p2.setMov(Movimiento::NONE);
+			p2.setCorrDir(Movimiento::DOWN);
+			break;
+		}
 	}
 	else if (eventos["left"])
 	{
-		p2.setMov(Movimiento::LEFT);
+		MovCheck c = playerMovementCheck(Movimiento::LEFT, p2);
+		switch (c)
+		{
+		case MovCheck::GREEN:
+			p2.setCorrection(false);
+			p2.setMov(Movimiento::LEFT);
+			break;
+		case MovCheck::RED:
+			p2.setCorrection(false);
+			p2.setMov(Movimiento::NONE);
+			break;
+		case MovCheck::CORRECTION:
+			p2.setCorrection(true);
+			p2.setMov(Movimiento::NONE);
+			p2.setCorrDir(Movimiento::LEFT);
+			break;
+		}
 	}
 	else if (eventos["right"])
 	{
-		p2.setMov(Movimiento::RIGHT);
+		MovCheck c = playerMovementCheck(Movimiento::RIGHT, p2);
+		switch (c)
+		{
+		case MovCheck::GREEN:
+			p2.setCorrection(false);
+			p2.setMov(Movimiento::RIGHT);
+			break;
+		case MovCheck::RED:
+			p2.setCorrection(false);
+			p2.setMov(Movimiento::NONE);
+			break;
+		case MovCheck::CORRECTION:
+			p2.setCorrection(true);
+			p2.setMov(Movimiento::NONE);
+			p2.setCorrDir(Movimiento::RIGHT);
+			break;
+		}
 	}	
 	else
 	{
+		p2.setCorrection(false);
 		p2.setMov(Movimiento::NONE);
 	}
 
+	/*
 	std::string s = 
 		"w: " + std::to_string(eventos["w"]) + " / "
 		+ "s: " + std::to_string(eventos["s"]) + " / "
@@ -172,6 +303,8 @@ void Play::update()
 		estado = s;
 		std::cout << estado << std::endl;
 	}
+	*/
+
 	p1.update();
 	p2.update();
 }
@@ -275,4 +408,207 @@ void Play::eHandler()
 				break;
 			}
 		}
+}
+
+MovCheck Play::playerMovementCheck(Movimiento m, Player p)
+{
+	switch (m)
+	{
+	case Movimiento::UP:
+		if ((p.getY() - BORDER_TOP) % CELLH != 0)
+		{
+			return MovCheck::GREEN;
+		}
+		else
+		{
+			if ((p.getX() - BORDER_LEFT) % CELLW == 0)
+			{
+				if (!getAdjCell(p.getX(), p.getY(), 0, -1)->collision)
+					return MovCheck::GREEN;
+				else
+					return MovCheck::RED;
+			}
+			else
+			{
+				bool c1 = getAdjCell(p.getX(), p.getY(), 0, -1)->collision;
+				bool c2 = getAdjCell(p.getX(), p.getY(), 1, -1)->collision;
+				if (c1 && c2)
+				{
+					return MovCheck::RED;
+				}
+				else if (!c1 && !c2)
+				{
+					return MovCheck::GREEN;
+				}
+				else if (!c1 && c2)
+				{
+					if ((p.getX() - BORDER_LEFT) % CELLW <= TOL)
+					{
+						return MovCheck::CORRECTION;
+					}
+					else
+						return MovCheck::RED;
+				}
+				else if (c1 && !c2)
+				{
+					if ((p.getX() - BORDER_LEFT) % CELLW >= CELLW - TOL)
+					{
+						return MovCheck::CORRECTION;
+					}
+					else
+						return MovCheck::RED;
+				}
+			}
+		}
+		break;
+	case Movimiento::DOWN:
+		if ((p.getY() - BORDER_TOP) % CELLH != 0)
+		{
+			return MovCheck::GREEN;
+		}
+		else
+		{
+			if ((p.getX() - BORDER_LEFT) % CELLW == 0)
+			{
+				if (!getAdjCell(p.getX(), p.getY(), 0, 1)->collision)
+					return MovCheck::GREEN;
+				else
+					return MovCheck::RED;
+			}
+			else
+			{
+				bool c1 = getAdjCell(p.getX(), p.getY(), 0, 1)->collision;
+				bool c2 = getAdjCell(p.getX(), p.getY(), 1, 1)->collision;
+				if (c1 && c2)
+				{
+					return MovCheck::RED;
+				}
+				else if (!c1 && !c2)
+				{
+					return MovCheck::GREEN;
+				}
+				else if (!c1 && c2)
+				{
+					if ((p.getX() - BORDER_LEFT) % CELLW <= TOL)
+					{
+						return MovCheck::CORRECTION;
+					}
+					else
+						return MovCheck::RED;
+				}
+				else if (c1 && !c2)
+				{
+					if ((p.getX() - BORDER_LEFT) % CELLW >= CELLW - TOL)
+					{
+						return MovCheck::CORRECTION;
+					}
+					else
+						return MovCheck::RED;
+				}
+			}
+		}
+		break;
+	case Movimiento::LEFT:
+		if ((p.getX() - BORDER_LEFT) % CELLW != 0)
+		{
+			return MovCheck::GREEN;
+		}
+		else
+		{
+			if ((p.getY() - BORDER_TOP) % CELLH == 0)
+			{
+				if (!getAdjCell(p.getX(), p.getY(), -1, 0)->collision)
+					return MovCheck::GREEN;
+				else
+					return MovCheck::RED;
+			}
+			else
+			{
+				bool c1 = getAdjCell(p.getX(), p.getY(), -1, 0)->collision;
+				bool c2 = getAdjCell(p.getX(), p.getY(), -1, 1)->collision;
+				if (c1 && c2)
+				{
+					return MovCheck::RED;
+				}
+				else if (!c1 && !c2)
+				{
+					return MovCheck::GREEN;
+				}
+				else if (!c1 && c2)
+				{
+					if ((p.getY() - BORDER_TOP) % CELLH <= TOL)
+					{
+						return MovCheck::CORRECTION;
+					}
+					else
+						return MovCheck::RED;
+				}
+				else if (c1 && !c2)
+				{
+					if ((p.getY() - BORDER_TOP) % CELLH >= CELLH - TOL)
+					{
+						return MovCheck::CORRECTION;
+					}
+					else
+						return MovCheck::RED;
+				}
+			}
+		}
+		break;
+	case Movimiento::RIGHT:
+		if ((p.getX() - BORDER_LEFT) % CELLW != 0)
+		{
+			return MovCheck::GREEN;
+		}
+		else
+		{
+			if ((p.getY() - BORDER_TOP) % CELLH == 0)
+			{
+				if (!getAdjCell(p.getX(), p.getY(), 1, 0)->collision)
+					return MovCheck::GREEN;
+				else
+					return MovCheck::RED;
+			}
+			else
+			{
+				bool c1 = getAdjCell(p.getX(), p.getY(), 1, 0)->collision;
+				bool c2 = getAdjCell(p.getX(), p.getY(), 1, 1)->collision;
+				if (c1 && c2)
+				{
+					return MovCheck::RED;
+				}
+				else if (!c1 && !c2)
+				{
+					return MovCheck::GREEN;
+				}
+				else if (!c1 && c2)
+				{
+					if ((p.getY() - BORDER_TOP) % CELLH <= TOL)
+					{
+						return MovCheck::CORRECTION;
+					}
+					else
+						return MovCheck::RED;
+				}
+				else if (c1 && !c2)
+				{
+					if ((p.getY() - BORDER_TOP) % CELLH >= CELLH - TOL)
+					{
+						return MovCheck::CORRECTION;
+					}
+					else
+						return MovCheck::RED;
+				}
+			}
+		}
+		break;
+	case Movimiento::NONE:
+		return MovCheck::RED;
+		break;
+	}
+}
+
+Objeto * Play::getAdjCell(int x, int y, int i, int j)
+{
+	return mapa[(x - BORDER_LEFT - (x - BORDER_LEFT) % CELLW) / CELLW + i][(y - BORDER_TOP - (y - BORDER_TOP) % CELLH) / CELLH + j];
 }

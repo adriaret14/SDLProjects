@@ -3,7 +3,7 @@
 
 
 Dest::Dest( int i, int j ):
-	Objeto( ObjTipo::DEST, i, j ),
+	Objeto( ObjTipo::DEST, i, j, true ),
 	hits(0)
 {
 	rect.x = 48;

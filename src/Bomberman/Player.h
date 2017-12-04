@@ -10,15 +10,19 @@ public:
 	void update();
 	void draw();
 	void setMov( Movimiento );
+	void setCorrDir(Movimiento);
 	int getX();
 	int getY();
+	void setCorrection( bool );
 private:
 	int playerNum;
 	SDL_Rect pos;
 	SDL_Rect rect;
 	int vida;
 	int score;
+	Movimiento corrDir;
 	Movimiento mov;
+	bool correction;
 	//Bomba b;
 	int dir;
 
