@@ -71,34 +71,34 @@ void Player::update()
 			{
 			case Movimiento::UP:
 				if ((pos.x - BORDER_LEFT) % CELLW <= TOL)
-					pos.x -= 2;
+					pos.x -= 4;
 				else if ((pos.x - BORDER_LEFT) % CELLW >= CELLW - TOL)
-					pos.x += 2;
+					pos.x += 4;
 				rect.y = 0;
 				moviendo = true;
 				break;
 			case Movimiento::DOWN:
 				if ((pos.x - BORDER_LEFT) % CELLW <= TOL)
-					pos.x -= 2;
+					pos.x -= 4;
 				else if ((pos.x - BORDER_LEFT) % CELLW >= CELLW - TOL)
-					pos.x += 2;
+					pos.x += 4;
 				pos.y += 4;
 				rect.y = 96;
 				moviendo = true;
 				break;
 			case Movimiento::LEFT:
 				if ((pos.y - BORDER_TOP) % CELLH <= TOL)
-					pos.y -= 2;
+					pos.y -= 4;
 				else if ((pos.y - BORDER_TOP) % CELLH >= CELLH - TOL)
-					pos.y += 2;
+					pos.y += 4;
 				rect.y = 48;
 				moviendo = true;
 				break;
 			case Movimiento::RIGHT:
 				if ((pos.y - BORDER_TOP) % CELLH <= TOL)
-					pos.y -= 2;
+					pos.y -= 4;
 				else if ((pos.y - BORDER_TOP) % CELLH >= CELLH - TOL)
-					pos.y += 2;
+					pos.y += 4;
 				rect.y = 144;
 				moviendo = true;
 				break;
@@ -137,6 +137,7 @@ void Player::draw()
 
 void Player::setMov( Movimiento m )
 {
+	if (m != Movimiento::NONE) lastMov = mov;
 	mov = m;
 }
 
@@ -155,9 +156,30 @@ int Player::getY()
 	return pos.y;
 }
 
+void Player::setX(int i)
+{
+	pos.x = i;
+}
+
+void Player::setY(int j)
+{
+	pos.y = j;
+}
+
+Movimiento Player::getLastMov()
+{
+	return lastMov;
+}
+
 void Player::setCorrection(bool b)
 {
 	correction = b;
+}
+
+Bomba * Player::spawnBomba(int i, int j, std::vector<int> e)
+{
+	bomb = true;
+	return new Bomba(i, j, e, playerNum);
 }
 
 

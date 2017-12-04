@@ -13,7 +13,12 @@ public:
 	void setCorrDir(Movimiento);
 	int getX();
 	int getY();
+	void setX(int);
+	void setY(int);
+	Movimiento getLastMov();
 	void setCorrection( bool );
+	Bomba * spawnBomba(int, int, std::vector<int>);
+	bool bomb;
 private:
 	int playerNum;
 	SDL_Rect pos;
@@ -22,8 +27,8 @@ private:
 	int score;
 	Movimiento corrDir;
 	Movimiento mov;
+	Movimiento lastMov;
 	bool correction;
-	//Bomba b;
 	int dir;
 
 };

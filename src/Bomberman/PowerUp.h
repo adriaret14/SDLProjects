@@ -6,7 +6,5 @@ class PowerUp :
 public:
 	PowerUp( int, int, int );
 	~PowerUp();
-	
-	int pwr;
 };
 

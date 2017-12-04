@@ -154,6 +154,7 @@
     <Xml Include="Map1.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Map2.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -38,3 +38,18 @@ void Objeto::draw()
 {
 	Renderer::Instance()->PushSprite(ITEMS, rect, pos);
 }
+
+bool Objeto::hit()
+{
+	return false;
+}
+
+int Objeto::powerup()
+{
+	return 0;
+}
+
+int Objeto::getOwner()
+{
+	return 0;
+}

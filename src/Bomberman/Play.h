@@ -24,9 +24,12 @@ public:
 
 private:
 	MovCheck playerMovementCheck(Movimiento, Player);
+	MovCheck bombPlacementCheck(Movimiento, Player);
 	Objeto* getAdjCell(int, int, int, int);
 	Player p1;
+	std::vector<int> b1;
 	Player p2;
+	std::vector<int> b2;
 	int rows;
 	int cols;
 	Objeto ***mapa;

@@ -1,17 +1,24 @@
 #include "Bomba.h"
 
-
-
-Bomba::Bomba(int x, int y):
-	pos({0, 0, 0, 0}),
-	rango(2),
-	dmg(100)
+Bomba::Bomba( int i, int j, std::vector<int> e, int n):
+	Objeto(ObjTipo::BOMB, i, j, true)
 {
-	//Renderer::Instance()->LoadTexture(BG, PATH_IMG + "items.png");
-	//pos = { 0, 48, x, y };
+	owner = n;
+	exps = e;
+	rect.x = 0;
+	rect.y = 48;
 }
-
 
 Bomba::~Bomba()
 {
+}
+
+int Bomba::getOwner()
+{
+	return owner;
+}
+
+void Bomba::update()
+{
+
 }

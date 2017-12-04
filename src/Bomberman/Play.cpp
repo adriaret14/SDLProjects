@@ -9,12 +9,12 @@
 
 Play::Play( int num ) :
 	Escena::Escena(720, 704),
-	estado(""),
 	p1(1, BORDER_LEFT + 2 * CELLW, BORDER_TOP + 2 * CELLH),
 	p2(2, BORDER_LEFT + 12 * CELLW, BORDER_TOP + 10 * CELLH)
 {
 	//Cargamos todas las texturas necesarias
 	Renderer::Instance()->LoadTexture(ITEMS, PATH_IMG + "items.png");
+	Renderer::Instance()->LoadTexture(EXPS, PATH_IMG + "explosion.png");
 
 
 	//Determinamos el path del xml del mapa
@@ -43,6 +43,12 @@ Play::Play( int num ) :
 	//Leemos el tamaño de la matriz del mapa
 	rows = std::stoi(Mat->first_attribute("filas")->value(), nullptr);
 	cols = std::stoi(Mat->first_attribute("columnas")->value(), nullptr);
+
+	//Posiciones de los jugadores
+	p1.setX(BORDER_LEFT + std::stoi(Mat->first_attribute("x1")->value(), nullptr) * CELLW);
+	p1.setY(BORDER_TOP + std::stoi(Mat->first_attribute("y1")->value(), nullptr) * CELLH);
+	p2.setX(BORDER_LEFT + std::stoi(Mat->first_attribute("x2")->value(), nullptr) * CELLW);
+	p2.setY(BORDER_TOP + std::stoi(Mat->first_attribute("y2")->value(), nullptr) * CELLH);
 
 	//Asignamos el espacio en memoria de la matriz del mapa
 	mapa = new Objeto**[cols];
@@ -82,11 +88,13 @@ Play::Play( int num ) :
 	eventos["a"] = false;
 	eventos["s"] = false;
 	eventos["d"] = false;
+	eventos["g"] = false;
 
 	eventos["up"] = false;
 	eventos["left"] = false;
 	eventos["down"] = false;
 	eventos["right"] = false;
+	eventos["rctrl"] = false;
 
 	eventos["quit"] = false;
 	eventos["esc"] = false;
@@ -114,6 +122,14 @@ void Play::draw()
 
 void Play::update()
 {
+	if (p1.bomb)
+	{
+		if (mapa[b1[0]][b1[1]]->boom)
+		{
+			mapa[b1[0]][b2[1]]->~Objeto();
+			mapa[b1[0]][b1[1]] = new Objeto();
+		}
+	}
 	if (eventos["w"])
 	{
 		MovCheck c = playerMovementCheck(Movimiento::UP, p1);
@@ -284,6 +300,155 @@ void Play::update()
 		p2.setCorrection(false);
 		p2.setMov(Movimiento::NONE);
 	}
+	if (eventos["g"])
+	{
+		if (!p1.bomb)
+		{
+			if (bombPlacementCheck(p1.getLastMov(), p1) == MovCheck::GREEN)
+			{
+				std::cout << "GREEN" << std::endl;
+				int i, j;
+				switch (p1.getLastMov())
+				{
+				case Movimiento::UP:
+					if ((p1.getX() - BORDER_LEFT) % CELLW >= CELLW - TOL)
+					{
+						i = (p1.getX() - BORDER_LEFT - (p1.getX() - BORDER_LEFT) % CELLW) / CELLW + 1;
+					}
+					else
+					{
+						i = (p1.getX() - BORDER_LEFT - (p1.getX() - BORDER_LEFT) % CELLW) / CELLW;
+					}
+					j = (p1.getY() - BORDER_TOP - (p1.getY() - BORDER_TOP) % CELLH) / CELLH - 1;
+					break;
+				case Movimiento::DOWN:
+					if ((p1.getX() - BORDER_LEFT) % CELLW >= CELLW - TOL)
+					{
+						i = (p1.getX() - BORDER_LEFT - (p1.getX() - BORDER_LEFT) % CELLW) / CELLW + 1;
+					}
+					else
+					{
+						i = (p1.getX() - BORDER_LEFT - (p1.getX() - BORDER_LEFT) % CELLW) / CELLW;
+					}
+					if ((p1.getY() - BORDER_TOP) % CELLH == 0)
+					{
+						j = (p1.getY() - BORDER_TOP - (p1.getY() - BORDER_TOP) % CELLH) / CELLH + 1;
+					}
+					else
+					{
+						j = (p1.getY() - BORDER_TOP - (p1.getY() - BORDER_TOP) % CELLH) / CELLH + 2;
+					}
+					break;
+				case Movimiento::LEFT:
+					i = (p1.getX() - BORDER_LEFT - (p1.getX() - BORDER_LEFT) % CELLW) / CELLW - 1;
+					if ((p1.getY() - BORDER_TOP) % CELLH >= CELLH - TOL)
+					{
+						j = (p1.getY() - BORDER_TOP - (p1.getY() - BORDER_TOP) % CELLH) / CELLH + 1;
+					}
+					else
+					{
+						j = (p1.getY() - BORDER_TOP - (p1.getY() - BORDER_TOP) % CELLH) / CELLH;
+					}
+					break;
+				case Movimiento::RIGHT:
+					if ((p1.getX() - BORDER_LEFT) % CELLW == 0)
+					{
+						i = (p1.getX() - BORDER_LEFT - (p1.getX() - BORDER_LEFT) % CELLW) / CELLW + 1;
+					}
+					else
+					{
+						i = (p1.getX() - BORDER_LEFT - (p1.getX() - BORDER_LEFT) % CELLW) / CELLW + 2;
+					}
+					if ((p1.getY() - BORDER_TOP) % CELLH >= CELLH - TOL)
+					{
+						j = (p1.getY() - BORDER_TOP - (p1.getY() - BORDER_TOP) % CELLH) / CELLH + 1;
+					}
+					else
+					{
+						j = (p1.getY() - BORDER_TOP - (p1.getY() - BORDER_TOP) % CELLH) / CELLH;
+					}
+					break;
+				}
+				bool pwrup = false;
+				std::vector<int> exps{ 0, 0, 0, 0 };
+				//UP
+				if (!mapa[i][j - 1]->collision)
+				{
+					exps[0]++;
+					if (!mapa[i][j - 2]->collision)
+					{
+						exps[0]++;
+						if (pwrup && !mapa[i][j - 3]->collision)
+						{
+							exps[0]++;
+							if (!mapa[i][j - 4]->collision)
+							{
+								exps[0]++;
+							}
+						}
+					}
+				}
+				//DOWN
+				if (!mapa[i][j + 1]->collision)
+				{
+					exps[1]++;
+					if (!mapa[i][j + 2]->collision)
+					{
+						exps[1]++;
+						if (pwrup && !mapa[i][j + 3]->collision)
+						{
+							exps[1]++;
+							if (!mapa[i][j + 4]->collision)
+							{
+								exps[1]++;
+							}
+						}
+					}
+				}
+				//LEFT
+				if (!mapa[i - 1][j]->collision)
+				{
+					exps[2]++;
+					if (!mapa[i - 2][j]->collision)
+					{
+						exps[2]++;
+						if (pwrup && !mapa[i - 3][j]->collision)
+						{
+							exps[2]++;
+							if (!mapa[i - 4][j]->collision)
+							{
+								exps[2]++;
+							}
+						}
+					}
+				}
+				//RIGHT
+				if (!mapa[i + 1][j]->collision)
+				{
+					exps[3]++;
+					if (!mapa[i + 2][j]->collision)
+					{
+						exps[3]++;
+						if (pwrup && !mapa[i + 3][j]->collision)
+						{
+							exps[3]++;
+							if (!mapa[i + 4][j]->collision)
+							{
+								exps[3]++;
+							}
+						}
+					}
+				}
+				mapa[i][j]->~Objeto();
+				mapa[i][j] = p1.spawnBomba(i, j, exps);
+				b1[0] = i; b1[1] = j;
+			}
+		}
+	}
+	if (eventos["rctrl"])
+	{
+
+	}
 
 	/*
 	std::string s = 
@@ -319,88 +484,29 @@ void Play::eHandler()
 	eventos["s"] = state[SDL_SCANCODE_S];
 	eventos["a"] = state[SDL_SCANCODE_A];
 	eventos["d"] = state[SDL_SCANCODE_D];
+	eventos["g"] = state[SDL_SCANCODE_G];
 
 	//Controles jugador 2
 	eventos["up"] = state[SDL_SCANCODE_UP];
 	eventos["down"] = state[SDL_SCANCODE_DOWN];
 	eventos["left"] = state[SDL_SCANCODE_LEFT];
 	eventos["right"] = state[SDL_SCANCODE_RIGHT];
+	eventos["rctrl"] = state[SDL_SCANCODE_RCTRL];
 
 	//Misc
 	eventos["esc"] = state[SDL_SCANCODE_ESCAPE];
-
-			/*if (state[SDL_SCANCODE_W])
-			{
-				p1.setMov(Movimiento::UP);
-			}
-			if (state[SDL_SCANCODE_S])
-			{
-				p1.setMov(Movimiento::DOWN);
-			}
-			if (state[SDL_SCANCODE_A])
-			{
-				p1.setMov(Movimiento::LEFT);
-			}
-			if (state[SDL_SCANCODE_D])
-			{
-				p1.setMov(Movimiento::RIGHT);
-			}
-			if (state[SDL_SCANCODE_UP])
-			{
-				p2.setMov(Movimiento::UP);
-			}
-			if (state[SDL_SCANCODE_DOWN])
-			{
-				p2.setMov(Movimiento::DOWN);
-			}
-			if (state[SDL_SCANCODE_LEFT])
-			{
-				p2.setMov(Movimiento::LEFT);
-			}
-			if (state[SDL_SCANCODE_RIGHT])
-			{
-				p2.setMov(Movimiento::RIGHT);
-			}
-			if (!state[SDL_SCANCODE_W] && !state[SDL_SCANCODE_A] && !state[SDL_SCANCODE_S] && !state[SDL_SCANCODE_D])
-			{
-				p1.setMov(Movimiento::NONE);
-			}
-			if (!state[SDL_SCANCODE_UP] && !state[SDL_SCANCODE_DOWN] && !state[SDL_SCANCODE_LEFT] && !state[SDL_SCANCODE_RIGHT])
-			{
-				p2.setMov(Movimiento::NONE);
-			}*/
-
+	
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-			case SDL_QUIT:		
-				//isRunning = false;
+			case SDL_QUIT:
 				eventos["quit"] = true;
 				break;
 			case SDL_KEYDOWN:
-				//if (event.key.keysym.sym == SDLK_ESCAPE && escena == 1) escena = 0;
 				break;
 			case SDL_KEYUP:
-				if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_s || event.key.keysym.sym == SDLK_d || event.key.keysym.sym == SDLK_a)
-				{
-					//p1.setMov(Movimiento::NONE);
-				}
-				if (event.key.keysym.sym == SDLK_UP || event.key.keysym.sym == SDLK_DOWN || event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_LEFT)
-				{
-					//p2.setMov(Movimiento::NONE);
-				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				eventos["click"] = true;
-				/*int mouseX, mouseY;
-				SDL_GetMouseState(&mouseX, &mouseY);
-				if ((mouseX >= textRectPlay.x && mouseX <= textRectPlay.x + textRectPlay.w) && (mouseY >= textRectPlay.y && mouseY <= textRectPlay.y + textRectPlay.h))
-				{
-					escena = 1;
-				}
-				if ((mouseX >= textRectExit.x && mouseX <= textRectExit.x + textRectExit.w) && (mouseY >= textRectExit.y && mouseY <= textRectExit.y + textRectExit.h))
-				{
-					isRunning = false;
-				}*/
 				break;
 			case SDL_MOUSEBUTTONUP:
 				eventos["click"] = false;
@@ -599,6 +705,185 @@ MovCheck Play::playerMovementCheck(Movimiento m, Player p)
 					else
 						return MovCheck::RED;
 				}
+			}
+		}
+		break;
+	case Movimiento::NONE:
+		return MovCheck::RED;
+		break;
+	}
+}
+
+MovCheck Play::bombPlacementCheck(Movimiento m, Player p)
+{
+
+	switch (m)
+	{
+	case Movimiento::UP:
+		if ((p.getX() - BORDER_LEFT) % CELLW == 0)
+		{
+			if (getAdjCell(p.getX(), p.getY(), 0, -1)->collision)
+			{
+				return MovCheck::RED;
+			}
+			else
+			{
+				return MovCheck::GREEN;
+			}
+		}
+		else
+		{
+			bool c1 = getAdjCell(p.getX(), p.getY(), 0, -1)->collision;
+			bool c2 = getAdjCell(p.getX(), p.getY(), 1, -1)->collision;
+			if (c1 && c2)
+			{
+				return MovCheck::RED;
+			}
+			else if (!c1 && !c2)
+			{
+				return MovCheck::GREEN;
+			}
+			else if (!c1 && c2)
+			{
+				if ((p.getX() - BORDER_LEFT) % CELLW <= TOL)
+				{
+					return MovCheck::GREEN;
+				}
+				else
+					return MovCheck::RED;
+			}
+			else if (c1 && !c2)
+			{
+				if ((p.getX() - BORDER_LEFT) % CELLW >= CELLW - TOL)
+				{
+					return MovCheck::GREEN;
+				}
+				else
+					return MovCheck::RED;
+			}
+		}
+		break;
+	case Movimiento::DOWN:
+		if ((p.getX() - BORDER_LEFT) % CELLW == 0)
+		{
+			if (getAdjCell(p.getX(), p.getY(), 0, 1)->collision)
+			{
+				return MovCheck::RED;
+			}
+			else
+			{
+				return MovCheck::GREEN;
+			}
+		}
+		else
+		{
+			bool c1 = getAdjCell(p.getX(), p.getY(), 0, 1)->collision;
+			bool c2 = getAdjCell(p.getX(), p.getY(), 1, 1)->collision;
+			if (c1 && c2)
+			{
+				return MovCheck::RED;
+			}
+			else if (!c1 && !c2)
+			{
+				return MovCheck::GREEN;
+			}
+			else if (!c1 && c2)
+			{
+				if ((p.getX() - BORDER_LEFT) % CELLW <= TOL)
+				{
+					return MovCheck::GREEN;
+				}
+				else
+					return MovCheck::RED;
+			}
+			else if (c1 && !c2)
+			{
+				if ((p.getX() - BORDER_LEFT) % CELLW >= CELLW - TOL)
+				{
+					return MovCheck::GREEN;
+				}
+				else
+					return MovCheck::RED;
+			}
+		}
+		break;
+	case Movimiento::LEFT:
+		if ((p.getY() - BORDER_TOP) % CELLH == 0)
+		{
+			if (!getAdjCell(p.getX(), p.getY(), -1, 0)->collision)
+				return MovCheck::GREEN;
+			else
+				return MovCheck::RED;
+		}
+		else
+		{
+			bool c1 = getAdjCell(p.getX(), p.getY(), -1, 0)->collision;
+			bool c2 = getAdjCell(p.getX(), p.getY(), -1, 1)->collision;
+			if (c1 && c2)
+			{
+				return MovCheck::RED;
+			}
+			else if (!c1 && !c2)
+			{
+				return MovCheck::GREEN;
+			}
+			else if (!c1 && c2)
+			{
+				if ((p.getY() - BORDER_TOP) % CELLH <= TOL)
+				{
+					return MovCheck::GREEN;
+				}
+				else
+					return MovCheck::RED;
+			}
+			else if (c1 && !c2)
+			{
+				if ((p.getY() - BORDER_TOP) % CELLH >= CELLH - TOL)
+				{
+					return MovCheck::GREEN;
+				}
+				else
+					return MovCheck::RED;
+			}
+		}
+		break;
+	case Movimiento::RIGHT:
+		if ((p.getY() - BORDER_TOP) % CELLH == 0)
+		{
+			if (!getAdjCell(p.getX(), p.getY(), 1, 0)->collision)
+				return MovCheck::GREEN;
+			else
+				return MovCheck::RED;
+		}
+		else
+		{
+			bool c1 = getAdjCell(p.getX(), p.getY(), 1, 0)->collision;
+			bool c2 = getAdjCell(p.getX(), p.getY(), 1, 1)->collision;
+			if (c1 && c2)
+			{
+				return MovCheck::RED;
+			}
+			else if (!c1 && !c2)
+			{
+				return MovCheck::GREEN;
+			}
+			else if (!c1 && c2)
+			{
+				if ((p.getY() - BORDER_TOP) % CELLH <= TOL)
+				{
+					return MovCheck::GREEN;
+				}
+				else
+					return MovCheck::RED;
+			}
+			else if (c1 && !c2)
+			{
+				if ((p.getY() - BORDER_TOP) % CELLH >= CELLH - TOL)
+				{
+					return MovCheck::GREEN;
+				}
+				else
+					return MovCheck::RED;
 			}
 		}
 		break;

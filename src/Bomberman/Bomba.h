@@ -1,14 +1,14 @@
 #include "Types.h"
 #include "Renderer.h"
+#include "Objeto.h"
+#include <ctime>
 #pragma once
-class Bomba
+class Bomba : public Objeto
 {
 public:
-	Bomba(int, int);
+	Bomba( int, int, std::vector<int>, int );
 	~Bomba();
-private:
-	SDL_Rect pos;
-	int rango;
-	int dmg;
+	int getOwner() override;
+	void update() override;
 };
 

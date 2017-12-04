@@ -7,9 +7,7 @@ public:
 	Dest( int, int );
 	~Dest();
 
-	int hits;
-
-	bool hit();
-	int powerup();
+	bool hit() override;
+	int powerup() override;
 };
 

@@ -3,9 +3,9 @@
 
 
 Dest::Dest( int i, int j ):
-	Objeto( ObjTipo::DEST, i, j, true ),
-	hits(0)
+	Objeto( ObjTipo::DEST, i, j, true )
 {
+	hits = 0;
 	rect.x = 48;
 	rect.y = 0;
 }

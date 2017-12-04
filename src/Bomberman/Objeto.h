@@ -16,6 +16,21 @@ public:
 	SDL_Rect rect;
 	SDL_Rect pos;
 
+	//Dest
+	int hits;
+	virtual bool hit();
+	virtual int powerup();
+
+	//Bomb
+	bool boom;
+	int owner;
+	std::vector<int> exps;
+	virtual int getOwner();
+	double timer;
+
+	//PowerUp
+	int pwr;
+
 	bool collision;
 };
 

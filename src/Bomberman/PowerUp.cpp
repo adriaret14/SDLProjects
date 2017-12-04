@@ -3,9 +3,9 @@
 
 
 PowerUp::PowerUp( int n, int i, int j ):
-	Objeto(ObjTipo::PWRUP, i, j ),
-	pwr(n)
+	Objeto(ObjTipo::PWRUP, i, j )
 {
+	pwr = n;
 	if (n == 1)
 		rect.x = 48;
 	else if (n == 2)

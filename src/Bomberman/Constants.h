@@ -9,7 +9,7 @@
 #define CELLW 48
 #define CELLH 48
 
-#define TOL 12
+#define TOL 8
 
 #define BORDER_LEFT 0
 #define BORDER_RIGHT 0
@@ -35,6 +35,7 @@ const std::string LUIGI_40 = "LUIGI_40";*/
 
 const std::string BG = "BG";
 const std::string ITEMS = "ITEMS";
+const std::string EXPS = "EXPS";
 const std::string MENU_TEXT_BUTTON_PLAY1 = "MENU_TEXT_BUTTON_PLAY1";
 const std::string MENU_TEXT_BUTTON_PLAY2 = "MENU_TEXT_BUTTON_PLAY2";
 const std::string MENU_TEXT_BUTTON_RANK = "MENU_TEXT_BUTTON_RANK";
