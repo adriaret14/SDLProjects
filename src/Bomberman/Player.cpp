@@ -176,10 +176,10 @@ void Player::setCorrection(bool b)
 	correction = b;
 }
 
-Bomba * Player::spawnBomba(int i, int j, std::vector<int> e)
+Bomba * Player::spawnBomba(int i, int j)
 {
 	bomb = true;
-	return new Bomba(i, j, e, playerNum);
+	return new Bomba(i, j, playerNum);
 }
 
 

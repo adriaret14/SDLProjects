@@ -1,12 +1,13 @@
 #include "Bomba.h"
 
-Bomba::Bomba( int i, int j, std::vector<int> e, int n):
+Bomba::Bomba( int i, int j, int n):
 	Objeto(ObjTipo::BOMB, i, j, true)
 {
 	owner = n;
-	exps = e;
 	rect.x = 0;
 	rect.y = 48;
+	timer = clock();
+	boom = false;
 }
 
 Bomba::~Bomba()
@@ -20,5 +21,8 @@ int Bomba::getOwner()
 
 void Bomba::update()
 {
-
+	if (clock() - timer >= CLOCKS_PER_SEC*3)
+	{
+		boom = true;
+	}
 }

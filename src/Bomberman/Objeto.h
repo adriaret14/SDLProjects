@@ -1,6 +1,7 @@
 #pragma once
 #include "Renderer.h"
-enum class ObjTipo { DEST, NO_DEST, PWRUP, BOMB, NADA };
+#include <time.h>
+enum class ObjTipo { DEST, NO_DEST, PWRUP, BOMB, EXP, NADA };
 class Objeto
 {
 public:
@@ -21,12 +22,12 @@ public:
 	virtual bool hit();
 	virtual int powerup();
 
-	//Bomb
+	//Bomb / Explosion
 	bool boom;
 	int owner;
-	std::vector<int> exps;
 	virtual int getOwner();
-	double timer;
+	clock_t timer;
+	int dir;
 
 	//PowerUp
 	int pwr;

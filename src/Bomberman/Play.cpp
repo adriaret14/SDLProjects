@@ -10,7 +10,9 @@
 Play::Play( int num ) :
 	Escena::Escena(720, 704),
 	p1(1, BORDER_LEFT + 2 * CELLW, BORDER_TOP + 2 * CELLH),
-	p2(2, BORDER_LEFT + 12 * CELLW, BORDER_TOP + 10 * CELLH)
+	p2(2, BORDER_LEFT + 12 * CELLW, BORDER_TOP + 10 * CELLH),
+	b1(2, 0),
+	b2(2, 0)
 {
 	//Cargamos todas las texturas necesarias
 	Renderer::Instance()->LoadTexture(ITEMS, PATH_IMG + "items.png");
@@ -122,12 +124,50 @@ void Play::draw()
 
 void Play::update()
 {
+	for (int i = 0; i < cols; i++)
+	{
+		for (int j = 0; j < rows; j++)
+		{
+			if (mapa[i][j]->tipo == ObjTipo::EXP)
+			{
+				mapa[i][j]->update();
+				if (mapa[i][j]->boom)
+				{
+					mapa[i][j]->~Objeto();
+					mapa[i][j] = new Objeto();
+				}
+			}
+		}
+	}
 	if (p1.bomb)
 	{
+		mapa[b1[0]][b1[1]]->update();
 		if (mapa[b1[0]][b1[1]]->boom)
 		{
 			mapa[b1[0]][b2[1]]->~Objeto();
-			mapa[b1[0]][b1[1]] = new Objeto();
+			mapa[b1[0]][b1[1]] = new Explosion( b1[0], b1[1], Movimiento::NONE, false, 1);
+			std::vector<int> exps = generateExpsVector(b1[0], b1[1]);
+			for (int n = 1; n <= exps[0]; n++)
+			{
+				mapa[b1[0]][b1[1] - n]->~Objeto();
+				mapa[b1[0]][b1[1] - n] = new Explosion(b1[0], b1[1] - n, Movimiento::UP, n == exps[0], 1);
+			}
+			for (int n = 1; n <= exps[1]; n++)
+			{
+				mapa[b1[0]][b1[1] + n]->~Objeto();
+				mapa[b1[0]][b1[1] + n] = new Explosion(b1[0], b1[1] + n, Movimiento::DOWN, n == exps[1], 1);
+			}
+			for (int n = 1; n <= exps[2]; n++)
+			{
+				mapa[b1[0] - n][b1[1]]->~Objeto();
+				mapa[b1[0] - n][b1[1]] = new Explosion(b1[0] - n, b1[1], Movimiento::LEFT, n == exps[2], 1);
+			}
+			for (int n = 1; n <= exps[3]; n++)
+			{
+				mapa[b1[0] + n][b1[1]]->~Objeto();
+				mapa[b1[0] + n][b1[1]] = new Explosion(b1[0] + n, b1[1], Movimiento::RIGHT, n == exps[3], 1);
+			}
+			p1.bomb = false;
 		}
 	}
 	if (eventos["w"])
@@ -369,78 +409,8 @@ void Play::update()
 					}
 					break;
 				}
-				bool pwrup = false;
-				std::vector<int> exps{ 0, 0, 0, 0 };
-				//UP
-				if (!mapa[i][j - 1]->collision)
-				{
-					exps[0]++;
-					if (!mapa[i][j - 2]->collision)
-					{
-						exps[0]++;
-						if (pwrup && !mapa[i][j - 3]->collision)
-						{
-							exps[0]++;
-							if (!mapa[i][j - 4]->collision)
-							{
-								exps[0]++;
-							}
-						}
-					}
-				}
-				//DOWN
-				if (!mapa[i][j + 1]->collision)
-				{
-					exps[1]++;
-					if (!mapa[i][j + 2]->collision)
-					{
-						exps[1]++;
-						if (pwrup && !mapa[i][j + 3]->collision)
-						{
-							exps[1]++;
-							if (!mapa[i][j + 4]->collision)
-							{
-								exps[1]++;
-							}
-						}
-					}
-				}
-				//LEFT
-				if (!mapa[i - 1][j]->collision)
-				{
-					exps[2]++;
-					if (!mapa[i - 2][j]->collision)
-					{
-						exps[2]++;
-						if (pwrup && !mapa[i - 3][j]->collision)
-						{
-							exps[2]++;
-							if (!mapa[i - 4][j]->collision)
-							{
-								exps[2]++;
-							}
-						}
-					}
-				}
-				//RIGHT
-				if (!mapa[i + 1][j]->collision)
-				{
-					exps[3]++;
-					if (!mapa[i + 2][j]->collision)
-					{
-						exps[3]++;
-						if (pwrup && !mapa[i + 3][j]->collision)
-						{
-							exps[3]++;
-							if (!mapa[i + 4][j]->collision)
-							{
-								exps[3]++;
-							}
-						}
-					}
-				}
 				mapa[i][j]->~Objeto();
-				mapa[i][j] = p1.spawnBomba(i, j, exps);
+				mapa[i][j] = p1.spawnBomba(i, j);
 				b1[0] = i; b1[1] = j;
 			}
 		}
@@ -891,6 +861,81 @@ MovCheck Play::bombPlacementCheck(Movimiento m, Player p)
 		return MovCheck::RED;
 		break;
 	}
+}
+
+std::vector<int> Play::generateExpsVector(int i, int j)
+{
+	bool pwrup = false;
+	std::vector<int> exps(4, 0);
+	//UP
+	if (!mapa[i][j - 1]->collision)
+	{
+		exps[0]++;
+		if (!mapa[i][j - 2]->collision)
+		{
+			exps[0]++;
+			if (pwrup && !mapa[i][j - 3]->collision)
+			{
+				exps[0]++;
+				if (!mapa[i][j - 4]->collision)
+				{
+					exps[0]++;
+				}
+			}
+		}
+	}
+	//DOWN
+	if (!mapa[i][j + 1]->collision)
+	{
+		exps[1]++;
+		if (!mapa[i][j + 2]->collision)
+		{
+			exps[1]++;
+			if (pwrup && !mapa[i][j + 3]->collision)
+			{
+				exps[1]++;
+				if (!mapa[i][j + 4]->collision)
+				{
+					exps[1]++;
+				}
+			}
+		}
+	}
+	//LEFT
+	if (!mapa[i - 1][j]->collision)
+	{
+		exps[2]++;
+		if (!mapa[i - 2][j]->collision)
+		{
+			exps[2]++;
+			if (pwrup && !mapa[i - 3][j]->collision)
+			{
+				exps[2]++;
+				if (!mapa[i - 4][j]->collision)
+				{
+					exps[2]++;
+				}
+			}
+		}
+	}
+	//RIGHT
+	if (!mapa[i + 1][j]->collision)
+	{
+		exps[3]++;
+		if (!mapa[i + 2][j]->collision)
+		{
+			exps[3]++;
+			if (pwrup && !mapa[i + 3][j]->collision)
+			{
+				exps[3]++;
+				if (!mapa[i + 4][j]->collision)
+				{
+					exps[3]++;
+				}
+			}
+		}
+	}
+	return exps;
 }
 
 Objeto * Play::getAdjCell(int x, int y, int i, int j)

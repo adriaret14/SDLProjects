@@ -6,6 +6,7 @@
 #include "Dest.h"
 #include "Bomba.h"
 #include "PowerUp.h"
+#include "Explosion.h"
 #include <iostream>
 #include <unordered_map>
 
@@ -25,6 +26,7 @@ public:
 private:
 	MovCheck playerMovementCheck(Movimiento, Player);
 	MovCheck bombPlacementCheck(Movimiento, Player);
+	std::vector<int> generateExpsVector(int, int);
 	Objeto* getAdjCell(int, int, int, int);
 	Player p1;
 	std::vector<int> b1;

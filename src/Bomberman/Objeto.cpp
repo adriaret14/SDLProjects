@@ -36,7 +36,14 @@ return;
 
 void Objeto::draw()
 {
-	Renderer::Instance()->PushSprite(ITEMS, rect, pos);
+	if (tipo == ObjTipo::EXP)
+	{
+		Renderer::Instance()->PushSprite(EXPS, rect, pos);
+	}
+	else
+	{
+		Renderer::Instance()->PushSprite(ITEMS, rect, pos);
+	}
 }
 
 bool Objeto::hit()

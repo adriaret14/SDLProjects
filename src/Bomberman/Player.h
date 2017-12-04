@@ -17,7 +17,7 @@ public:
 	void setY(int);
 	Movimiento getLastMov();
 	void setCorrection( bool );
-	Bomba * spawnBomba(int, int, std::vector<int>);
+	Bomba * spawnBomba(int, int);
 	bool bomb;
 private:
 	int playerNum;
