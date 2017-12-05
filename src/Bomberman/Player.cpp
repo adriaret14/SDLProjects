@@ -50,9 +50,6 @@ void Player::update()
 	}
 	if (patines)
 	{
-	}
-	if (patines)
-	{
 		velocidad = 8;
 	}
 	else
