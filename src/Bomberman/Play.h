@@ -24,6 +24,7 @@ public:
 	void eHandler() override;
 
 private:
+	clock_t tiempo;
 	MovCheck playerMovementCheck(Movimiento, Player);
 	MovCheck bombPlacementCheck(Movimiento, Player);
 	std::vector<std::vector<int>> generateExplosionVector(int, int);

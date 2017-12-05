@@ -12,7 +12,8 @@ Play::Play( int num ) :
 	p1(1, BORDER_LEFT + 2 * CELLW, BORDER_TOP + 2 * CELLH, 0),
 	p2(2, BORDER_LEFT + 12 * CELLW, BORDER_TOP + 10 * CELLH, 0),
 	b1(2, 0),
-	b2(2, 0)
+	b2(2, 0),
+	tiempo(clock())
 {
 	//Cargamos todas las texturas necesarias
 	Renderer::Instance()->LoadTexture(ITEMS, PATH_IMG + "items.png");
@@ -128,6 +129,10 @@ void Play::draw()
 
 void Play::update()
 {
+	if (clock() - tiempo >= CLOCKS_PER_SEC * 80)
+	{
+		Estado = estadoActual::GoToRank;
+	}
 	for (int i = 0; i < cols; i++)
 	{
 		for (int j = 0; j < rows; j++)
