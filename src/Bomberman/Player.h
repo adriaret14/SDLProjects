@@ -41,7 +41,8 @@ private:
 	Movimiento lastMov;
 	bool correction;
 	int dir;
-	clock_t timer;
+	clock_t timerVida;
+	clock_t timerPwrUp;
 
 };
 

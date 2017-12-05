@@ -6,7 +6,8 @@ Player::Player(int n, int x, int y, int vida):
 	playerNum(n),
 	dir(1),
 	vida(vida),
-	timer(clock()),
+	timerVida(clock()),
+	timerPwrUp(clock()),
 	score(0),
 	mov(Movimiento::NONE),
 	correction(false),
@@ -42,6 +43,14 @@ Player::~Player()
 
 void Player::update()
 {
+	if (clock() - timerPwrUp >= CLOCKS_PER_SEC * 10)
+	{
+		patines = false;
+		casco = false;
+	}
+	if (patines)
+	{
+	}
 	if (patines)
 	{
 		velocidad = 8;
@@ -207,7 +216,7 @@ int Player::getVida()
 
 void Player::hit()
 {
-	if (clock() - timer >= CLOCKS_PER_SEC)
+	if (clock() - timerVida >= CLOCKS_PER_SEC)
 	{
 		if (casco)
 		{
@@ -217,7 +226,7 @@ void Player::hit()
 		{
 			vida--;
 		}
-		timer = clock();
+		timerVida = clock();
 	}
 }
 
@@ -229,6 +238,7 @@ void Player::setScore(int n)
 void Player::setPatines(bool b)
 {
 	patines = b;
+	if(b) timerPwrUp = clock();
 }
 
 bool Player::getPatines()
@@ -239,6 +249,7 @@ bool Player::getPatines()
 void Player::setCasco(bool b)
 {
 	casco = b;
+	if (b) timerPwrUp = clock();
 }
 
 bool Player::getCasco()

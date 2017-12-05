@@ -142,10 +142,11 @@ void Play::update()
 					{
 					case PwrUpTipo::CASCO:
 						p1.setCasco(true);
+						p1.setPatines(false);
 						break;
 					case PwrUpTipo::PATINES:
-						std::cout << "patines p1" << std::endl;
 						p1.setPatines(true);
+						p1.setCasco(false);
 						break;
 					}
 					mapa[i][j]->~Objeto();
@@ -159,10 +160,12 @@ void Play::update()
 					{
 					case PwrUpTipo::CASCO:
 						p2.setCasco(true);
+						p2.setPatines(false);
 						break;
 					case PwrUpTipo::PATINES:
 						std::cout << "patines p1" << std::endl;
 						p2.setPatines(true);
+						p2.setCasco(false);
 						break;
 					}
 					mapa[i][j]->~Objeto();
