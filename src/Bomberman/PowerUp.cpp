@@ -2,16 +2,19 @@
 
 
 
-PowerUp::PowerUp( int n, int i, int j ):
+PowerUp::PowerUp( int i, int j, PwrUpTipo t ):
 	Objeto(ObjTipo::PWRUP, i, j )
 {
-	pwr = n;
-	if (n == 1)
-		rect.x = 48;
-	else if (n == 2)
+	pwrUp = t;
+	switch (pwrUp)
+	{
+	case PwrUpTipo::CASCO:
 		rect.x = 96;
-	else
+		break;
+	case PwrUpTipo::PATINES:
 		rect.x = 48;
+		break;
+	}
 	rect.y = 48;
 }
 

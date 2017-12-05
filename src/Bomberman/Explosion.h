@@ -5,7 +5,7 @@ class Explosion :
 	public Objeto
 {
 public:
-	Explosion(int, int, Movimiento, bool, int);
+	Explosion(int, int, Movimiento, bool);
 	~Explosion();
 
 	void update() override;

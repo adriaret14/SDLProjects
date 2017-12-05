@@ -9,7 +9,7 @@
 #define CELLW 48
 #define CELLH 48
 
-#define TOL 8
+#define TOL 12
 
 #define BORDER_LEFT 0
 #define BORDER_RIGHT 0

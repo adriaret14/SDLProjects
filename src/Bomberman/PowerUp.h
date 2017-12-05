@@ -4,7 +4,7 @@ class PowerUp :
 	public Objeto
 {
 public:
-	PowerUp( int, int, int );
+	PowerUp( int, int, PwrUpTipo );
 	~PowerUp();
 };
 

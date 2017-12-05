@@ -52,12 +52,7 @@ bool Objeto::hit()
 	return false;
 }
 
-int Objeto::powerup()
+PwrUpTipo Objeto::powerup()
 {
-	return 0;
-}
-
-int Objeto::getOwner()
-{
-	return 0;
+	return PwrUpTipo::NONE;
 }

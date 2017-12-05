@@ -8,6 +8,9 @@ public:
 	~Dest();
 
 	bool hit() override;
-	int powerup() override;
+	PwrUpTipo powerup() override;
+
+private:
+	int hits;
 };
 

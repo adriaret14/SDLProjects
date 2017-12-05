@@ -16,8 +16,7 @@ Dest::~Dest()
 }
 
 bool Dest::hit()
-{
-	std::cout << "hit" << std::endl;
+{	
 	switch (hits) {
 	case 0:
 		rect.x += 48;
@@ -30,13 +29,16 @@ bool Dest::hit()
 	}
 }
 
-int Dest::powerup()
+PwrUpTipo Dest::powerup()
 {
+	return PwrUpTipo::PATINES;
+	/*
 	int random = rand() % 10;
 	if (random == 1)
-		return 1;
+		return PwrUpTipo::CASCO;
 	else if (random == 2)
-		return 2;
+		return PwrUpTipo::PATINES;
 	else
-		return 0;
+		return PwrUpTipo::NONE;
+	*/
 }

@@ -1,9 +1,8 @@
 #include "Explosion.h"
 
-Explosion::Explosion( int i, int j, Movimiento m, bool punta, int n) :
+Explosion::Explosion( int i, int j, Movimiento m, bool punta) :
 	Objeto(ObjTipo::EXP, i, j)
 {
-	owner = n;
 	boom = false;
 	if (m == Movimiento::NONE)
 	{

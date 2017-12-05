@@ -2,11 +2,16 @@
 #include "Renderer.h"
 
 
-Player::Player(int n, int x, int y):
+Player::Player(int n, int x, int y, int vida):
 	playerNum(n),
 	dir(1),
+	vida(vida),
+	timer(clock()),
+	score(0),
 	mov(Movimiento::NONE),
-	correction(false)
+	correction(false),
+	casco(false),
+	patines(false)
 {
 	std::string ID;
 	std::string path;
@@ -37,6 +42,14 @@ Player::~Player()
 
 void Player::update()
 {
+	if (patines)
+	{
+		velocidad = 8;
+	}
+	else
+	{
+		velocidad = 4;
+	}
 	if (rect.x == 0)
 		dir = 1;
 	if (rect.x == 96)
@@ -45,22 +58,22 @@ void Player::update()
 	switch (mov)
 	{
 	case Movimiento::UP:
-		pos.y -= 4;
+		pos.y -= velocidad;
 		rect.y = 0;
 		moviendo = true;
 		break;
 	case Movimiento::DOWN:
-		pos.y += 4;
+		pos.y += velocidad;
 		rect.y = 96;
 		moviendo = true;
 		break;
 	case Movimiento::LEFT:
-		pos.x -= 4;
+		pos.x -= velocidad;
 		rect.y = 48;
 		moviendo = true;
 		break;
 	case Movimiento::RIGHT:
-		pos.x += 4;
+		pos.x += velocidad;
 		rect.y = 144;
 		moviendo = true;
 		break;
@@ -180,6 +193,57 @@ Bomba * Player::spawnBomba(int i, int j)
 {
 	bomb = true;
 	return new Bomba(i, j);
+}
+
+void Player::setVida(int n)
+{
+	vida = vida + n;
+}
+
+int Player::getVida()
+{
+	return vida;
+}
+
+void Player::hit()
+{
+	if (clock() - timer >= CLOCKS_PER_SEC)
+	{
+		if (casco)
+		{
+			casco = false;
+		}
+		else
+		{
+			vida--;
+		}
+		timer = clock();
+	}
+}
+
+void Player::setScore(int n)
+{
+	score += n;
+}
+
+void Player::setPatines(bool b)
+{
+	patines = b;
+}
+
+bool Player::getPatines()
+{
+	return patines;
+}
+
+void Player::setCasco(bool b)
+{
+	casco = b;
+}
+
+bool Player::getCasco()
+{
+	return casco;
 }
 
 

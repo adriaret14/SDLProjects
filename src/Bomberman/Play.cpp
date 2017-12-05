@@ -9,8 +9,8 @@
 
 Play::Play( int num ) :
 	Escena::Escena(720, 704),
-	p1(1, BORDER_LEFT + 2 * CELLW, BORDER_TOP + 2 * CELLH),
-	p2(2, BORDER_LEFT + 12 * CELLW, BORDER_TOP + 10 * CELLH),
+	p1(1, BORDER_LEFT + 2 * CELLW, BORDER_TOP + 2 * CELLH, 0),
+	p2(2, BORDER_LEFT + 12 * CELLW, BORDER_TOP + 10 * CELLH, 0),
 	b1(2, 0),
 	b2(2, 0)
 {
@@ -51,6 +51,10 @@ Play::Play( int num ) :
 	p1.setY(BORDER_TOP + std::stoi(Mat->first_attribute("y1")->value(), nullptr) * CELLH);
 	p2.setX(BORDER_LEFT + std::stoi(Mat->first_attribute("x2")->value(), nullptr) * CELLW);
 	p2.setY(BORDER_TOP + std::stoi(Mat->first_attribute("y2")->value(), nullptr) * CELLH);
+
+	//Vidas de los jugadores
+	p1.setVida(std::stoi(Mat->first_attribute("vidas")->value(), nullptr));
+	p2.setVida(std::stoi(Mat->first_attribute("vidas")->value(), nullptr));
 
 	//Asignamos el espacio en memoria de la matriz del mapa
 	mapa = new Objeto**[cols];
@@ -128,8 +132,76 @@ void Play::update()
 	{
 		for (int j = 0; j < rows; j++)
 		{
-			if (mapa[i][j]->tipo == ObjTipo::EXP)
+			if (mapa[i][j]->tipo == ObjTipo::PWRUP)
 			{
+				//Colision con jugador1
+
+				if (abs(p1.getX() - (BORDER_LEFT + i*CELLW)) < 48 && abs(p1.getY() - (BORDER_TOP + j*CELLH)) < 48)
+				{
+					switch (mapa[i][j]->pwrUp)
+					{
+					case PwrUpTipo::CASCO:
+						p1.setCasco(true);
+						break;
+					case PwrUpTipo::PATINES:
+						std::cout << "patines p1" << std::endl;
+						p1.setPatines(true);
+						break;
+					}
+					mapa[i][j]->~Objeto();
+					mapa[i][j] = new Objeto();
+				}
+
+				//Colision con jugador2
+				if (abs(p2.getX() - (BORDER_LEFT + i*CELLW)) < 48 && abs(p2.getY() - (BORDER_TOP + j*CELLH)) < 48)
+				{
+					switch (mapa[i][j]->pwrUp)
+					{
+					case PwrUpTipo::CASCO:
+						p2.setCasco(true);
+						break;
+					case PwrUpTipo::PATINES:
+						std::cout << "patines p1" << std::endl;
+						p2.setPatines(true);
+						break;
+					}
+					mapa[i][j]->~Objeto();
+					mapa[i][j] = new Objeto();
+				}
+			}
+			else if (mapa[i][j]->tipo == ObjTipo::EXP)
+			{
+				//Colision con jugador1
+				
+				if (abs(p1.getX() - (BORDER_LEFT + i*CELLW)) < 48 && abs(p1.getY() - (BORDER_TOP + j*CELLH)) < 48)
+				{
+					int v = p1.getVida();
+					p1.hit();
+					if (p1.getVida() < v)
+					{
+						p2.setScore(100);
+					}
+					if (p1.getVida() <= 0)
+					{
+						Estado = estadoActual::GoToRank;
+					}
+				}
+
+				//Colision con jugador2
+				if (abs(p2.getX() - (BORDER_LEFT + i*CELLW)) < 48 && abs(p2.getY() - (BORDER_TOP + j*CELLH)) < 48)
+				{
+					int v = p2.getVida();
+					p2.hit();
+					if (p2.getVida() < v)
+					{
+						p1.setScore(100);
+					}
+					if (p2.getVida() <= 0)
+					{
+						Estado = estadoActual::GoToRank;
+					}
+				}
+
 				mapa[i][j]->update();
 				if (mapa[i][j]->boom)
 				{
@@ -145,59 +217,95 @@ void Play::update()
 		if (mapa[b1[0]][b1[1]]->boom)
 		{
 			mapa[b1[0]][b2[1]]->~Objeto();
-			mapa[b1[0]][b1[1]] = new Explosion( b1[0], b1[1], Movimiento::NONE, false, 1);
+			mapa[b1[0]][b1[1]] = new Explosion( b1[0], b1[1], Movimiento::NONE, false);
 			std::vector<std::vector<int>> exps = generateExplosionVector(b1[0], b1[1]);
 			for (int n = 1; n <= exps[0][0]; n++)
 			{
 				mapa[b1[0]][b1[1] - n]->~Objeto();
-				mapa[b1[0]][b1[1] - n] = new Explosion(b1[0], b1[1] - n, Movimiento::UP, (n == exps[0][0] && exps[1][0] == -1), 1);
+				mapa[b1[0]][b1[1] - n] = new Explosion(b1[0], b1[1] - n, Movimiento::UP, (n == exps[0][0] && exps[1][0] == -1));
 			}
 			for (int n = 1; n <= exps[0][1]; n++)
 			{
 				mapa[b1[0]][b1[1] + n]->~Objeto();
-				mapa[b1[0]][b1[1] + n] = new Explosion(b1[0], b1[1] + n, Movimiento::DOWN, (n == exps[0][1] && exps[1][1] == -1), 1);
+				mapa[b1[0]][b1[1] + n] = new Explosion(b1[0], b1[1] + n, Movimiento::DOWN, (n == exps[0][1] && exps[1][1] == -1));
 			}
 			for (int n = 1; n <= exps[0][2]; n++)
 			{
 				mapa[b1[0] - n][b1[1]]->~Objeto();
-				mapa[b1[0] - n][b1[1]] = new Explosion(b1[0] - n, b1[1], Movimiento::LEFT, (n == exps[0][2] && exps[1][2] == -1), 1);
+				mapa[b1[0] - n][b1[1]] = new Explosion(b1[0] - n, b1[1], Movimiento::LEFT, (n == exps[0][2] && exps[1][2] == -1));
 			}
 			for (int n = 1; n <= exps[0][3]; n++)
 			{
 				mapa[b1[0] + n][b1[1]]->~Objeto();
-				mapa[b1[0] + n][b1[1]] = new Explosion(b1[0] + n, b1[1], Movimiento::RIGHT, (n == exps[0][3] && exps[1][3] == -1), 1);
+				mapa[b1[0] + n][b1[1]] = new Explosion(b1[0] + n, b1[1], Movimiento::RIGHT, (n == exps[0][3] && exps[1][3] == -1));
 			}
 			std::cout << exps[1][0] << " " << exps[1][1] << " " << exps[1][2] << " " << exps[1][3] << std::endl;
 			if (exps[1][0] != -1)
 			{
 				if (mapa[b1[0]][b1[1] - exps[1][0]]->hit())
 				{
+					p1.setScore(20);
+					PwrUpTipo t = mapa[b1[0]][b1[1] - exps[1][0]]->powerup();
 					mapa[b1[0]][b1[1] - exps[1][0]]->~Objeto();
-					mapa[b1[0]][b1[1] - exps[1][0]] = new Objeto();
+					if (t == PwrUpTipo::NONE)
+					{
+						mapa[b1[0]][b1[1] - exps[1][0]] = new Objeto();
+					}
+					else
+					{
+						mapa[b1[0]][b1[1] - exps[1][0]] = new PowerUp(b1[0], b1[1] - exps[1][0], t);
+					}
 				}
 			}
 			if (exps[1][1] != -1)
 			{
 				if (mapa[b1[0]][b1[1] + exps[1][1]]->hit())
 				{
+					p1.setScore(20);
+					PwrUpTipo t = mapa[b1[0]][b1[1] + exps[1][1]]->powerup();
 					mapa[b1[0]][b1[1] + exps[1][1]]->~Objeto();
-					mapa[b1[0]][b1[1] + exps[1][1]] = new Objeto();
+					if (t == PwrUpTipo::NONE)
+					{
+						mapa[b1[0]][b1[1] + exps[1][1]] = new Objeto();
+					}
+					else
+					{
+						mapa[b1[0]][b1[1] + exps[1][1]] = new PowerUp(b1[0], b1[1] + exps[1][1], t);
+					}
 				}
 			}
 			if (exps[1][2] != -1)
 			{
 				if (mapa[b1[0] - exps[1][2]][b1[1]]->hit())
 				{
+					p1.setScore(20);
+					PwrUpTipo t = mapa[b1[0] - exps[1][2]][b1[1]]->powerup();
 					mapa[b1[0] - exps[1][2]][b1[1]]->~Objeto();
-					mapa[b1[0] - exps[1][2]][b1[1]] = new Objeto();
+					if (t == PwrUpTipo::NONE)
+					{
+						mapa[b1[0] - exps[1][2]][b1[1]] = new Objeto();
+					}
+					else
+					{
+						mapa[b1[0] - exps[1][2]][b1[1]] = new PowerUp(b1[0] - exps[1][2], b1[1], t);
+					}
 				}
 			}
 			if (exps[1][3] != -1)
 			{
 				if (mapa[b1[0] + exps[1][3]][b1[1]]->hit())
 				{
+					p1.setScore(20);
+					PwrUpTipo t = mapa[b1[0]][b1[1] + exps[1][1]]->powerup();
 					mapa[b1[0] + exps[1][3]][b1[1]]->~Objeto();
-					mapa[b1[0] + exps[1][3]][b1[1]] = new Objeto();
+					if (t == PwrUpTipo::NONE)
+					{
+						mapa[b1[0] + exps[1][3]][b1[1]] = new Objeto();
+					}
+					else
+					{
+						mapa[b1[0] + exps[1][3]][b1[1]] = new PowerUp(b1[0] + exps[1][3], b1[1], t);
+					}
 				}
 			}
 			p1.bomb = false;
@@ -209,63 +317,104 @@ void Play::update()
 		if (mapa[b2[0]][b2[1]]->boom)
 		{
 			mapa[b2[0]][b2[1]]->~Objeto();
-			mapa[b2[0]][b2[1]] = new Explosion(b2[0], b2[1], Movimiento::NONE, false, 1);
+			mapa[b2[0]][b2[1]] = new Explosion(b2[0], b2[1], Movimiento::NONE, false);
 			std::vector<std::vector<int>> exps = generateExplosionVector(b2[0], b2[1]);
 			for (int n = 1; n <= exps[0][0]; n++)
 			{
 				mapa[b2[0]][b2[1] - n]->~Objeto();
-				mapa[b2[0]][b2[1] - n] = new Explosion(b2[0], b2[1] - n, Movimiento::UP, (n == exps[0][0] && exps[1][0] == -1), 1);
+				mapa[b2[0]][b2[1] - n] = new Explosion(b2[0], b2[1] - n, Movimiento::UP, (n == exps[0][0] && exps[1][0] == -1));
 			}
 			for (int n = 1; n <= exps[0][1]; n++)
 			{
 				mapa[b2[0]][b2[1] + n]->~Objeto();
-				mapa[b2[0]][b2[1] + n] = new Explosion(b2[0], b2[1] + n, Movimiento::DOWN, (n == exps[0][1] && exps[1][1] == -1), 1);
+				mapa[b2[0]][b2[1] + n] = new Explosion(b2[0], b2[1] + n, Movimiento::DOWN, (n == exps[0][1] && exps[1][1] == -1));
 			}
 			for (int n = 1; n <= exps[0][2]; n++)
 			{
 				mapa[b2[0] - n][b2[1]]->~Objeto();
-				mapa[b2[0] - n][b2[1]] = new Explosion(b2[0] - n, b2[1], Movimiento::LEFT, (n == exps[0][2] && exps[1][2] == -1), 1);
+				mapa[b2[0] - n][b2[1]] = new Explosion(b2[0] - n, b2[1], Movimiento::LEFT, (n == exps[0][2] && exps[1][2] == -1));
 			}
 			for (int n = 1; n <= exps[0][3]; n++)
 			{
 				mapa[b2[0] + n][b2[1]]->~Objeto();
-				mapa[b2[0] + n][b2[1]] = new Explosion(b2[0] + n, b2[1], Movimiento::RIGHT, (n == exps[0][3] && exps[1][3] == -1), 1);
+				mapa[b2[0] + n][b2[1]] = new Explosion(b2[0] + n, b2[1], Movimiento::RIGHT, (n == exps[0][3] && exps[1][3] == -1));
 			}
 			std::cout << exps[1][0] << " " << exps[1][1] << " " << exps[1][2] << " " << exps[1][3] << std::endl;
 			if (exps[1][0] != -1)
 			{
 				if (mapa[b2[0]][b2[1] - exps[1][0]]->hit())
 				{
+					p2.setScore(20);
+					PwrUpTipo t = mapa[b2[0]][b2[1] - exps[1][0]]->powerup();
 					mapa[b2[0]][b2[1] - exps[1][0]]->~Objeto();
-					mapa[b2[0]][b2[1] - exps[1][0]] = new Objeto();
+					if (t == PwrUpTipo::NONE)
+					{
+						mapa[b2[0]][b2[1] - exps[1][0]] = new Objeto();
+					}
+					else
+					{
+						mapa[b2[0]][b2[1] - exps[1][0]] = new PowerUp(b2[0], b2[1] - exps[1][0], t);
+					}
 				}
 			}
 			if (exps[1][1] != -1)
 			{
 				if (mapa[b2[0]][b2[1] + exps[1][1]]->hit())
 				{
+					p2.setScore(20);
+					PwrUpTipo t = mapa[b2[0]][b2[1] + exps[1][1]]->powerup();
 					mapa[b2[0]][b2[1] + exps[1][1]]->~Objeto();
-					mapa[b2[0]][b2[1] + exps[1][1]] = new Objeto();
+					if (t == PwrUpTipo::NONE)
+					{
+						mapa[b2[0]][b2[1] + exps[1][1]] = new Objeto();
+					}
+					else
+					{
+						mapa[b2[0]][b2[1] + exps[1][1]] = new PowerUp(b2[0], b2[1] + exps[1][1], t);
+					}
 				}
 			}
 			if (exps[1][2] != -1)
 			{
 				if (mapa[b2[0] - exps[1][2]][b2[1]]->hit())
 				{
+					p2.setScore(20);
+					PwrUpTipo t = mapa[b2[0] - exps[1][2]][b2[1]]->powerup();
 					mapa[b2[0] - exps[1][2]][b2[1]]->~Objeto();
-					mapa[b2[0] - exps[1][2]][b2[1]] = new Objeto();
+					if (t == PwrUpTipo::NONE)
+					{
+						mapa[b2[0] - exps[1][2]][b2[1]] = new Objeto();
+					}
+					else
+					{
+						mapa[b2[0] - exps[1][2]][b2[1]] = new PowerUp(b2[0] - exps[1][2], b2[1], t);
+					}
 				}
 			}
 			if (exps[1][3] != -1)
 			{
 				if (mapa[b2[0] + exps[1][3]][b2[1]]->hit())
 				{
+					p2.setScore(20);
+					PwrUpTipo t = mapa[b2[0]][b2[1] + exps[1][1]]->powerup();
 					mapa[b2[0] + exps[1][3]][b2[1]]->~Objeto();
-					mapa[b2[0] + exps[1][3]][b2[1]] = new Objeto();
+					if (t == PwrUpTipo::NONE)
+					{
+						mapa[b2[0] + exps[1][3]][b2[1]] = new Objeto();
+					}
+					else
+					{
+						mapa[b2[0] + exps[1][3]][b2[1]] = new PowerUp(b2[0] + exps[1][3], b2[1], t);
+					}
 				}
 			}
 			p2.bomb = false;
 		}
+	}
+	if (eventos["esc"])
+	{
+		Estado = estadoActual::Exit;
+		std::cout << "Pulso" << std::endl;
 	}
 	if (eventos["w"])
 	{

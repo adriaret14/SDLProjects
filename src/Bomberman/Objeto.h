@@ -3,6 +3,7 @@
 #include <time.h>
 #include <iostream>
 enum class ObjTipo { DEST, NO_DEST, PWRUP, BOMB, EXP, NADA };
+enum class PwrUpTipo { CASCO, PATINES, NONE };
 class Objeto
 {
 public:
@@ -19,14 +20,13 @@ public:
 	SDL_Rect pos;
 
 	//Dest
-	int hits;
 	virtual bool hit();
-	virtual int powerup();
+	virtual PwrUpTipo powerup();
 
 	bool boom;
 
 	//PowerUp
-	int pwr;
+	PwrUpTipo pwrUp;
 
 	bool collision;
 };

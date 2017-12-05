@@ -5,7 +5,7 @@ enum class Movimiento {UP, DOWN, LEFT, RIGHT, NONE};
 class Player
 {
 public:
-	Player(int, int, int);
+	Player(int, int, int, int);
 	~Player();
 	void update();
 	void draw();
@@ -19,7 +19,18 @@ public:
 	void setCorrection( bool );
 	Bomba * spawnBomba(int, int);
 	bool bomb;
+	void setVida(int);
+	int getVida();
+	void hit();
+	void setScore(int);
+	void setPatines(bool);
+	bool getPatines();
+	void setCasco(bool);
+	bool getCasco();
 private:
+	int velocidad;
+	bool patines;
+	bool casco;
 	int playerNum;
 	SDL_Rect pos;
 	SDL_Rect rect;
@@ -30,6 +41,7 @@ private:
 	Movimiento lastMov;
 	bool correction;
 	int dir;
+	clock_t timer;
 
 };
 
