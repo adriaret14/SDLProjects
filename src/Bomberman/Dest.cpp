@@ -1,11 +1,9 @@
 #include "Dest.h"
 
-
-
 Dest::Dest( int i, int j ):
-	Objeto( ObjTipo::DEST, i, j, true )
+	Objeto( ObjTipo::DEST, i, j, true ),
+	hits(0)
 {
-	hits = 0;
 	rect.x = 48;
 	rect.y = 0;
 }
@@ -31,8 +29,6 @@ bool Dest::hit()
 
 PwrUpTipo Dest::powerup()
 {
-	return PwrUpTipo::PATINES;
-	/*
 	int random = rand() % 10;
 	if (random == 1)
 		return PwrUpTipo::CASCO;
@@ -40,5 +36,4 @@ PwrUpTipo Dest::powerup()
 		return PwrUpTipo::PATINES;
 	else
 		return PwrUpTipo::NONE;
-	*/
 }

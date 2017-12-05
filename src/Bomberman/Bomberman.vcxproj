@@ -121,6 +121,7 @@
     <ClCompile Include="Explosion.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="HelloSDL.cpp" />
+    <ClCompile Include="HUD.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="NoDest.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="Escena.h" />
     <ClInclude Include="Explosion.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="HUD.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="NoDest.h" />
     <ClInclude Include="Objeto.h" />

@@ -6,6 +6,7 @@ Player::Player(int n, int x, int y, int vida):
 	playerNum(n),
 	dir(1),
 	vida(vida),
+	velocidad(4),
 	timerVida(clock()),
 	timerPwrUp(clock()),
 	score(0),
@@ -48,14 +49,7 @@ void Player::update()
 		patines = false;
 		casco = false;
 	}
-	if (patines)
-	{
-		velocidad = 8;
-	}
-	else
-	{
-		velocidad = 4;
-	}
+	
 	if (rect.x == 0)
 		dir = 1;
 	if (rect.x == 96)
@@ -139,6 +133,15 @@ void Player::update()
 	else
 	{
 		rect.x = 48;
+	}
+
+	if (patines)
+	{
+		velocidad = 8;
+	}
+	else
+	{
+		velocidad = 4;
 	}
 }
 
