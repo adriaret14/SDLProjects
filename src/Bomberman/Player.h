@@ -23,6 +23,7 @@ public:
 	int getVida();
 	void hit();
 	void setScore(int);
+	int getScore();
 	void setPatines(bool);
 	bool getPatines();
 	void setCasco(bool);

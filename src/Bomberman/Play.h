@@ -7,6 +7,7 @@
 #include "Bomba.h"
 #include "PowerUp.h"
 #include "Explosion.h"
+#include "HUD.h"
 #include <iostream>
 #include <unordered_map>
 
@@ -24,6 +25,7 @@ public:
 	void eHandler() override;
 
 private:
+	HUD hud;
 	clock_t tiempo;
 	MovCheck playerMovementCheck(Movimiento, Player);
 	MovCheck bombPlacementCheck(Movimiento, Player);

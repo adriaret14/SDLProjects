@@ -61,8 +61,7 @@ void Renderer::LoadTextureText(const std::string &fontId, Text text) {
 	SDL_Surface	*tmpSurf = TTF_RenderText_Blended(m_fontData[fontId], text.text.c_str(), SDL_Color{ text.color.r, text.color.g, text.color.b,text.color.a });
 	if (tmpSurf == nullptr) throw "Unable to create the SDL text surface";
 	SDL_Texture *texture{ SDL_CreateTextureFromSurface(m_renderer, tmpSurf) };
-	m_textureData[text.id] = texture;
-	
+	m_textureData[text.id] = texture;	
 };
 
 Vector2 Renderer::GetTextureSize(const std::string &id) {

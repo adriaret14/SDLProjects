@@ -75,3 +75,4 @@ const std::string PATH_FONT = "../../res/ttf/";
 const std::string PATH_AU = "../../res/au/";
 
 const std::string SAIYAN_80 = "SAIYAN_80";
+const std::string DBZ_80 = "DBZ_80";

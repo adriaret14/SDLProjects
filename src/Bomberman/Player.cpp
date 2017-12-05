@@ -235,6 +235,11 @@ void Player::setScore(int n)
 	score += n;
 }
 
+int Player::getScore()
+{
+	return score;
+}
+
 void Player::setPatines(bool b)
 {
 	patines = b;

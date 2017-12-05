@@ -11,6 +11,7 @@ Play::Play( int num ) :
 	Escena::Escena(720, 704),
 	p1(1, BORDER_LEFT + 2 * CELLW, BORDER_TOP + 2 * CELLH, 0),
 	p2(2, BORDER_LEFT + 12 * CELLW, BORDER_TOP + 10 * CELLH, 0),
+	hud(p1, p2),
 	b1(2, 0),
 	b2(2, 0),
 	tiempo(clock())
@@ -56,6 +57,8 @@ Play::Play( int num ) :
 	//Vidas de los jugadores
 	p1.setVida(std::stoi(Mat->first_attribute("vidas")->value(), nullptr));
 	p2.setVida(std::stoi(Mat->first_attribute("vidas")->value(), nullptr));
+
+	hud.setTime(80);
 
 	//Asignamos el espacio en memoria de la matriz del mapa
 	mapa = new Objeto**[cols];
@@ -124,11 +127,13 @@ void Play::draw()
 	}
 	p1.draw();
 	p2.draw();
+	hud.draw();
 	Renderer::Instance()->Render();
 }
 
 void Play::update()
 {
+	hud.update();
 	if (clock() - tiempo >= CLOCKS_PER_SEC * 80)
 	{
 		Estado = estadoActual::GoToRank;
