@@ -15,7 +15,7 @@ Bomba::~Bomba()
 
 void Bomba::update()
 {
-	if (clock() - timer >= CLOCKS_PER_SEC*3)
+	if (clock() - timer >= CLOCKS_PER_SEC * BOMB_DELAY)
 	{
 		boom = true;
 	}

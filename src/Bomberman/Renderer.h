@@ -36,7 +36,8 @@ public:
 	 Vector2 GetTextureSize(const std::string &id);
 	 void PushImage(const std::string &id,const SDL_Rect &rect);
 	 void PushSprite(const std::string &id,const SDL_Rect &rectSprite,const SDL_Rect &rectPos);
-	 void DestroyTexture(std::string);
+	 void EmptyRenderer();
+	 void LoadSolidTexture(const std::string &id, Uint8 r, Uint8 g, Uint8 b);
 	 
 };
 

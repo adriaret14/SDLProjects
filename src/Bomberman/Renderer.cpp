@@ -76,6 +76,39 @@ void Renderer::PushImage(const std::string &id, const SDL_Rect &rect) {
 
 void Renderer::PushSprite(const std::string &id, const SDL_Rect &rectSprite,const SDL_Rect &rectPos) {
 	SDL_RenderCopy(m_renderer, m_textureData[id], &rectSprite, &rectPos);
+}
+void Renderer::EmptyRenderer()
+{
+	for (auto &t : m_textureData) SDL_DestroyTexture(t.second), t.second = nullptr;
+	for (auto &f : m_fontData) TTF_CloseFont(f.second), f.second = nullptr;
+}
+void Renderer::LoadSolidTexture(const std::string & id, Uint8 r, Uint8 g, Uint8 b)
+{
+	SDL_Surface *surface;
+	Uint32 rmask, gmask, bmask, amask;
+
+	if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+	{
+		rmask = 0xff000000;
+		gmask = 0x00ff0000;
+		bmask = 0x0000ff00;
+		amask = 0x000000ff;
+	}
+	else
+	{
+		rmask = 0x000000ff;
+		gmask = 0x0000ff00;
+		bmask = 0x00ff0000;
+		amask = 0xff000000;
+	}
+
+	surface = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, rmask, gmask, bmask, amask);
+	SDL_Texture *texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+	if (texture == nullptr) throw "No s'han pogut crear les textures";
+
+	SDL_SetTextureColorMod( texture, r, g, b);
+
+	m_textureData[id] = texture;
 };
 
 

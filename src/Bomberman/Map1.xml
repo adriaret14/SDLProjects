@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ROOT>
-  <Matriz filas="13" columnas="15" vidas="2" tiempo="150" x1 = "1" y1 = "1" x2 = "13" y2 ="11">
+  <Matriz filas="13" columnas="15" vidas="3" tiempo="80" x1 = "1" y1 = "1" x2 = "13" y2 ="11">
     <Columna_0>
       <Celda_0>nodest</Celda_0>
       <Celda_1>nodest</Celda_1>

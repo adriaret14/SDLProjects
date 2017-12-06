@@ -23,8 +23,8 @@ HUD::HUD( Player & player1, Player & player2):
 	Renderer::Instance()->LoadFont(f);
 
 	Font fnums;
-	fnums.id = DBZ_80;
-	fnums.path = PATH_FONT + "ColophonDBZ.ttf";
+	fnums.id = GAMEOVER_80;
+	fnums.path = PATH_FONT + "game_over.ttf";
 	fnums.size = 80;
 	Renderer::Instance()->LoadFont(fnums);
 
@@ -308,19 +308,19 @@ void HUD::update()
 	int score2 = Player2.getScore();
 
 	iS11 = floor(score1 / 1000);
-	score1 -= iS11;
+	score1 -= iS11*1000;
 	iS12 = floor(score1 / 100);
-	score1 -= iS12;
+	score1 -= iS12*100;
 	iS13 = floor(score1 / 10);
-	score1 -= iS13;
+	score1 -= iS13*10;
 	iS14 = score1;
 
 	iS21 = floor(score2 / 1000);
-	score2 -= iS21;
+	score2 -= iS21*1000;
 	iS22 = floor(score2 / 100);
-	score2 -= iS22;
+	score2 -= iS22*100;
 	iS23 = floor(score2 / 10);
-	score2 -= iS23;
+	score2 -= iS23*10;
 	iS24 = score2;
 }
 

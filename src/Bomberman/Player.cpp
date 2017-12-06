@@ -6,7 +6,7 @@ Player::Player(int n, int x, int y, int vida):
 	playerNum(n),
 	dir(1),
 	vida(vida),
-	velocidad(4),
+	velocidad(VEL_1),
 	timerVida(clock()),
 	timerPwrUp(clock()),
 	score(0),
@@ -44,7 +44,7 @@ Player::~Player()
 
 void Player::update()
 {
-	if (clock() - timerPwrUp >= CLOCKS_PER_SEC * 10)
+	if (clock() - timerPwrUp >= CLOCKS_PER_SEC * PWRUP_DURATION)
 	{
 		patines = false;
 		casco = false;
@@ -137,11 +137,11 @@ void Player::update()
 
 	if (patines)
 	{
-		velocidad = 8;
+		velocidad = VEL_2;
 	}
 	else
 	{
-		velocidad = 4;
+		velocidad = VEL_1;
 	}
 }
 
@@ -211,6 +211,7 @@ void Player::setVida(int n)
 
 int Player::getVida()
 {
+	std::cout << vida << std::endl;
 	return vida;
 }
 
@@ -218,11 +219,7 @@ void Player::hit()
 {
 	if (clock() - timerVida >= CLOCKS_PER_SEC)
 	{
-		if (casco)
-		{
-			casco = false;
-		}
-		else
+		if (!casco)
 		{
 			vida--;
 		}

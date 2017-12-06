@@ -21,6 +21,9 @@
 #define DESTRUCTION_POINTS 15
 #define KILL_POINTS 100
 
+#define VEL_1 4
+#define VEL_2 8
+
 /*const std::string MENU_BG = "MENU_BG";
 const std::string PLAY_BG = "PLAY_BG";
 const std::string RANK_BG = "PLAY_BG";
@@ -75,4 +78,4 @@ const std::string PATH_FONT = "../../res/ttf/";
 const std::string PATH_AU = "../../res/au/";
 
 const std::string SAIYAN_80 = "SAIYAN_80";
-const std::string DBZ_80 = "DBZ_80";
+const std::string GAMEOVER_80 = "DBZ_80";

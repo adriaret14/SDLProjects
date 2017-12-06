@@ -8,7 +8,7 @@
 
 
 Play::Play( int num ) :
-	Escena::Escena(720, 704),
+	Escena::Escena(SCREEN_WIDTH, SCREEN_HEIGHT),
 	p1(1, BORDER_LEFT + 2 * CELLW, BORDER_TOP + 2 * CELLH, 0),
 	p2(2, BORDER_LEFT + 12 * CELLW, BORDER_TOP + 10 * CELLH, 0),
 	hud(p1, p2),
@@ -16,10 +16,13 @@ Play::Play( int num ) :
 	b2(2, 0),
 	tiempo(clock())
 {
+	//Cargamos el background
+	Renderer::Instance()->LoadTexture(BG, PATH_IMG + "bgGame.jpg");
+	background = SDL_Rect{ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+
 	//Cargamos todas las texturas necesarias
 	Renderer::Instance()->LoadTexture(ITEMS, PATH_IMG + "items.png");
 	Renderer::Instance()->LoadTexture(EXPS, PATH_IMG + "explosion.png");
-
 
 	//Determinamos el path del xml del mapa
 	std::string mapPath;
@@ -58,7 +61,8 @@ Play::Play( int num ) :
 	p1.setVida(std::stoi(Mat->first_attribute("vidas")->value(), nullptr));
 	p2.setVida(std::stoi(Mat->first_attribute("vidas")->value(), nullptr));
 
-	hud.setTime(80);
+	maxTime = std::stoi(Mat->first_attribute("tiempo")->value(), nullptr);
+	hud.setTime(maxTime);
 
 	//Asignamos el espacio en memoria de la matriz del mapa
 	mapa = new Objeto**[cols];
@@ -98,7 +102,7 @@ Play::Play( int num ) :
 	eventos["a"] = false;
 	eventos["s"] = false;
 	eventos["d"] = false;
-	eventos["g"] = false;
+	eventos["space"] = false;
 
 	eventos["up"] = false;
 	eventos["left"] = false;
@@ -114,12 +118,23 @@ Play::Play( int num ) :
 
 Play::~Play()
 {
+	for (int i = 0; i < cols; i++)
+	{
+		for (int j = 0; j < rows; j++)
+		{
+			delete mapa[i][j];
+		}
+		delete mapa[i];
+	}
+	delete mapa;
+
+	Renderer::Instance()->EmptyRenderer();
 }
 
 void Play::draw()
 {
 	Renderer::Instance()->Clear();
-	Renderer::Instance()->PushImage("BG", background);
+	Renderer::Instance()->PushImage(BG, background);
 	for (int i = 0; i < cols; i++) {
 		for (int j = 0; j < rows; j++) {
 			mapa[i][j]->draw();
@@ -134,7 +149,7 @@ void Play::draw()
 void Play::update()
 {
 	hud.update();
-	if (clock() - tiempo >= CLOCKS_PER_SEC * 80)
+	if (clock() - tiempo >= CLOCKS_PER_SEC * maxTime)
 	{
 		Estado = estadoActual::GoToRank;
 	}
@@ -146,7 +161,7 @@ void Play::update()
 			{
 				//Colision con jugador1
 
-				if (abs(p1.getX() - (BORDER_LEFT + i*CELLW)) < 48 && abs(p1.getY() - (BORDER_TOP + j*CELLH)) < 48)
+				if (abs(p1.getX() - (BORDER_LEFT + i*CELLW)) < CELLW && abs(p1.getY() - (BORDER_TOP + j*CELLH)) < CELLH)
 				{
 					switch (mapa[i][j]->pwrUp)
 					{
@@ -164,7 +179,7 @@ void Play::update()
 				}
 
 				//Colision con jugador2
-				if (abs(p2.getX() - (BORDER_LEFT + i*CELLW)) < 48 && abs(p2.getY() - (BORDER_TOP + j*CELLH)) < 48)
+				if (abs(p2.getX() - (BORDER_LEFT + i*CELLW)) < CELLW && abs(p2.getY() - (BORDER_TOP + j*CELLH)) < CELLH)
 				{
 					switch (mapa[i][j]->pwrUp)
 					{
@@ -186,13 +201,13 @@ void Play::update()
 			{
 				//Colision con jugador1
 				
-				if (abs(p1.getX() - (BORDER_LEFT + i*CELLW)) < 48 && abs(p1.getY() - (BORDER_TOP + j*CELLH)) < 48)
+				if (abs(p1.getX() - (BORDER_LEFT + i*CELLW)) < CELLW && abs(p1.getY() - (BORDER_TOP + j*CELLH)) < CELLH)
 				{
 					int v = p1.getVida();
 					p1.hit();
 					if (p1.getVida() < v)
 					{
-						p2.setScore(100);
+						p2.setScore(KILL_POINTS);
 					}
 					if (p1.getVida() <= 0)
 					{
@@ -201,13 +216,13 @@ void Play::update()
 				}
 
 				//Colision con jugador2
-				if (abs(p2.getX() - (BORDER_LEFT + i*CELLW)) < 48 && abs(p2.getY() - (BORDER_TOP + j*CELLH)) < 48)
+				if (abs(p2.getX() - (BORDER_LEFT + i*CELLW)) < CELLW && abs(p2.getY() - (BORDER_TOP + j*CELLH)) < CELLH)
 				{
 					int v = p2.getVida();
 					p2.hit();
 					if (p2.getVida() < v)
 					{
-						p1.setScore(100);
+						p1.setScore(KILL_POINTS);
 					}
 					if (p2.getVida() <= 0)
 					{
@@ -257,7 +272,7 @@ void Play::update()
 			{
 				if (mapa[b1[0]][b1[1] - exps[1][0]]->hit())
 				{
-					p1.setScore(20);
+					p1.setScore(DESTRUCTION_POINTS);
 					PwrUpTipo t = mapa[b1[0]][b1[1] - exps[1][0]]->powerup();
 					mapa[b1[0]][b1[1] - exps[1][0]]->~Objeto();
 					if (t == PwrUpTipo::NONE)
@@ -274,7 +289,7 @@ void Play::update()
 			{
 				if (mapa[b1[0]][b1[1] + exps[1][1]]->hit())
 				{
-					p1.setScore(20);
+					p1.setScore(DESTRUCTION_POINTS);
 					PwrUpTipo t = mapa[b1[0]][b1[1] + exps[1][1]]->powerup();
 					mapa[b1[0]][b1[1] + exps[1][1]]->~Objeto();
 					if (t == PwrUpTipo::NONE)
@@ -291,7 +306,7 @@ void Play::update()
 			{
 				if (mapa[b1[0] - exps[1][2]][b1[1]]->hit())
 				{
-					p1.setScore(20);
+					p1.setScore(DESTRUCTION_POINTS);
 					PwrUpTipo t = mapa[b1[0] - exps[1][2]][b1[1]]->powerup();
 					mapa[b1[0] - exps[1][2]][b1[1]]->~Objeto();
 					if (t == PwrUpTipo::NONE)
@@ -308,7 +323,7 @@ void Play::update()
 			{
 				if (mapa[b1[0] + exps[1][3]][b1[1]]->hit())
 				{
-					p1.setScore(20);
+					p1.setScore(DESTRUCTION_POINTS);
 					PwrUpTipo t = mapa[b1[0]][b1[1] + exps[1][1]]->powerup();
 					mapa[b1[0] + exps[1][3]][b1[1]]->~Objeto();
 					if (t == PwrUpTipo::NONE)
@@ -357,7 +372,7 @@ void Play::update()
 			{
 				if (mapa[b2[0]][b2[1] - exps[1][0]]->hit())
 				{
-					p2.setScore(20);
+					p2.setScore(DESTRUCTION_POINTS);
 					PwrUpTipo t = mapa[b2[0]][b2[1] - exps[1][0]]->powerup();
 					mapa[b2[0]][b2[1] - exps[1][0]]->~Objeto();
 					if (t == PwrUpTipo::NONE)
@@ -374,7 +389,7 @@ void Play::update()
 			{
 				if (mapa[b2[0]][b2[1] + exps[1][1]]->hit())
 				{
-					p2.setScore(20);
+					p2.setScore(DESTRUCTION_POINTS);
 					PwrUpTipo t = mapa[b2[0]][b2[1] + exps[1][1]]->powerup();
 					mapa[b2[0]][b2[1] + exps[1][1]]->~Objeto();
 					if (t == PwrUpTipo::NONE)
@@ -391,7 +406,7 @@ void Play::update()
 			{
 				if (mapa[b2[0] - exps[1][2]][b2[1]]->hit())
 				{
-					p2.setScore(20);
+					p2.setScore(DESTRUCTION_POINTS);
 					PwrUpTipo t = mapa[b2[0] - exps[1][2]][b2[1]]->powerup();
 					mapa[b2[0] - exps[1][2]][b2[1]]->~Objeto();
 					if (t == PwrUpTipo::NONE)
@@ -408,7 +423,7 @@ void Play::update()
 			{
 				if (mapa[b2[0] + exps[1][3]][b2[1]]->hit())
 				{
-					p2.setScore(20);
+					p2.setScore(DESTRUCTION_POINTS);
 					PwrUpTipo t = mapa[b2[0]][b2[1] + exps[1][1]]->powerup();
 					mapa[b2[0] + exps[1][3]][b2[1]]->~Objeto();
 					if (t == PwrUpTipo::NONE)
@@ -599,7 +614,7 @@ void Play::update()
 		p2.setCorrection(false);
 		p2.setMov(Movimiento::NONE);
 	}
-	if (eventos["g"])
+	if (eventos["space"])
 	{
 		if (!p1.bomb)
 		{
@@ -784,7 +799,7 @@ void Play::eHandler()
 	eventos["s"] = state[SDL_SCANCODE_S];
 	eventos["a"] = state[SDL_SCANCODE_A];
 	eventos["d"] = state[SDL_SCANCODE_D];
-	eventos["g"] = state[SDL_SCANCODE_G];
+	eventos["space"] = state[SDL_SCANCODE_SPACE];
 
 	//Controles jugador 2
 	eventos["up"] = state[SDL_SCANCODE_UP];

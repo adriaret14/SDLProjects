@@ -25,6 +25,7 @@ public:
 	void eHandler() override;
 
 private:
+	int maxTime;
 	HUD hud;
 	clock_t tiempo;
 	MovCheck playerMovementCheck(Movimiento, Player);

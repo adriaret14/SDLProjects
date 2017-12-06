@@ -3,8 +3,11 @@
 
 
 Menu::Menu():
-	Escena::Escena(720,704)
+	Escena::Escena(SCREEN_WIDTH, SCREEN_HEIGHT)
 {
+	Renderer::Instance()->LoadSolidTexture(BG, 0, 255, 0);
+	background = SDL_Rect{ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+
 	Font f;
 	f.id = SAIYAN_80;
 	f.path = PATH_FONT + "saiyan.ttf";
