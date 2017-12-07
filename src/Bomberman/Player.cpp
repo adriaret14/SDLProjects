@@ -9,6 +9,7 @@ Player::Player(int n, int x, int y, int vida):
 	velocidad(VEL_1),
 	timerVida(clock()),
 	timerPwrUp(clock()),
+	timerAnim(clock()),
 	score(0),
 	mov(Movimiento::NONE),
 	correction(false),
@@ -128,11 +129,22 @@ void Player::update()
 	}
 	if (moviendo)
 	{
-		rect.x += dir * 48;
+		if (clock() - timerAnim >= CLOCKS_PER_SEC / 12)
+		{
+			rect.x += dir * 48;
+			timerAnim = clock();
+		}
 	}
 	else
 	{
-		rect.x = 48;
+		if (lastMov == Movimiento::DOWN || lastMov == Movimiento::UP)
+		{
+			rect.x = 48;
+		}
+		else
+		{
+			rect.x = 0;
+		}
 	}
 
 	if (patines)
