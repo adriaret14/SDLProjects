@@ -32,15 +32,22 @@ private:
 	Objeto* getAdjCell(int, int, int, int);
 
 	clock_t tiempo;
+	int maxTime;
+
+	HUD hud;
+
 	Player p1;
 	std::vector<int> b1;
 	Player p2;
 	std::vector<int> b2;
+
+	std::vector<Explosion> explosions;
+
 	int rows;
 	int cols;
 	Objeto ***mapa;
+
 	std::string estado;
-	int maxTime;
-	HUD hud;
+	
 };
 

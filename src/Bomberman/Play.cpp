@@ -142,6 +142,10 @@ void Play::draw()
 	}
 	p1.draw();
 	p2.draw();
+	for each (Explosion E in explosions)
+	{
+		E.draw();
+	}
 	hud.draw();
 	Renderer::Instance()->Render();
 }
@@ -197,46 +201,48 @@ void Play::update()
 					mapa[i][j] = new Objeto();
 				}
 			}
-			else if (mapa[i][j]->tipo == ObjTipo::EXP)
+		}
+	}
+	for (std::vector<Explosion>::iterator it = explosions.begin(); it != explosions.end();)
+	{
+		//Colision con jugador1
+		if (abs(p1.getX() - (it->rect.x)) < CELLW && abs(p1.getY() - (it->rect.y)) < CELLH)
+		{
+			int v = p1.getVida();
+			p1.hit();
+			if (p1.getVida() < v)
 			{
-				//Colision con jugador1
-				
-				if (abs(p1.getX() - (BORDER_LEFT + i*CELLW)) < CELLW && abs(p1.getY() - (BORDER_TOP + j*CELLH)) < CELLH)
-				{
-					int v = p1.getVida();
-					p1.hit();
-					if (p1.getVida() < v)
-					{
-						p2.setScore(KILL_POINTS);
-					}
-					if (p1.getVida() <= 0)
-					{
-						Estado = estadoActual::GoToRank;
-					}
-				}
-
-				//Colision con jugador2
-				if (abs(p2.getX() - (BORDER_LEFT + i*CELLW)) < CELLW && abs(p2.getY() - (BORDER_TOP + j*CELLH)) < CELLH)
-				{
-					int v = p2.getVida();
-					p2.hit();
-					if (p2.getVida() < v)
-					{
-						p1.setScore(KILL_POINTS);
-					}
-					if (p2.getVida() <= 0)
-					{
-						Estado = estadoActual::GoToRank;
-					}
-				}
-
-				mapa[i][j]->update();
-				if (mapa[i][j]->boom)
-				{
-					mapa[i][j]->~Objeto();
-					mapa[i][j] = new Objeto();
-				}
+				p2.setScore(KILL_POINTS);
 			}
+			if (p1.getVida() <= 0)
+			{
+				Estado = estadoActual::GoToRank;
+			}
+		}
+
+		//Colision con jugador2
+		if (abs(p2.getX() - (it->rect.x)) < CELLW && abs(p2.getY() - (it->rect.y)) < CELLH)
+		{
+			int v = p2.getVida();
+			p2.hit();
+			if (p2.getVida() < v)
+			{
+				p1.setScore(KILL_POINTS);
+			}
+			if (p2.getVida() <= 0)
+			{
+				Estado = estadoActual::GoToRank;
+			}
+		}
+
+		it->update();
+		if (it->boom)
+		{
+			it = explosions.erase(it);
+		}
+		else
+		{
+			it++;
 		}
 	}
 	if (p1.bomb)
@@ -244,28 +250,25 @@ void Play::update()
 		mapa[b1[0]][b1[1]]->update();
 		if (mapa[b1[0]][b1[1]]->boom)
 		{
-			mapa[b1[0]][b2[1]]->~Objeto();
-			mapa[b1[0]][b1[1]] = new Explosion( b1[0], b1[1], Movimiento::NONE, false);
+			mapa[b1[0]][b1[1]]->~Objeto();
+			mapa[b1[0]][b1[1]] = new Objeto();
+			explosions.push_back(Explosion( b1[0], b1[1], Movimiento::NONE, false));
 			std::vector<std::vector<int>> exps = generateExplosionVector(b1[0], b1[1]);
 			for (int n = 1; n <= exps[0][0]; n++)
 			{
-				mapa[b1[0]][b1[1] - n]->~Objeto();
-				mapa[b1[0]][b1[1] - n] = new Explosion(b1[0], b1[1] - n, Movimiento::UP, (n == exps[0][0] && exps[1][0] == -1));
+				explosions.push_back(Explosion(b1[0], b1[1] - n, Movimiento::UP, (n == exps[0][0] && exps[1][0] == -1)));
 			}
 			for (int n = 1; n <= exps[0][1]; n++)
 			{
-				mapa[b1[0]][b1[1] + n]->~Objeto();
-				mapa[b1[0]][b1[1] + n] = new Explosion(b1[0], b1[1] + n, Movimiento::DOWN, (n == exps[0][1] && exps[1][1] == -1));
+				explosions.push_back(Explosion(b1[0], b1[1] + n, Movimiento::DOWN, (n == exps[0][1] && exps[1][1] == -1)));
 			}
 			for (int n = 1; n <= exps[0][2]; n++)
 			{
-				mapa[b1[0] - n][b1[1]]->~Objeto();
-				mapa[b1[0] - n][b1[1]] = new Explosion(b1[0] - n, b1[1], Movimiento::LEFT, (n == exps[0][2] && exps[1][2] == -1));
+				explosions.push_back(Explosion(b1[0] - n, b1[1], Movimiento::LEFT, (n == exps[0][2] && exps[1][2] == -1)));
 			}
 			for (int n = 1; n <= exps[0][3]; n++)
 			{
-				mapa[b1[0] + n][b1[1]]->~Objeto();
-				mapa[b1[0] + n][b1[1]] = new Explosion(b1[0] + n, b1[1], Movimiento::RIGHT, (n == exps[0][3] && exps[1][3] == -1));
+				explosions.push_back(Explosion(b1[0] + n, b1[1], Movimiento::RIGHT, (n == exps[0][3] && exps[1][3] == -1)));
 			}
 			std::cout << exps[1][0] << " " << exps[1][1] << " " << exps[1][2] << " " << exps[1][3] << std::endl;
 			if (exps[1][0] != -1)
@@ -345,27 +348,24 @@ void Play::update()
 		if (mapa[b2[0]][b2[1]]->boom)
 		{
 			mapa[b2[0]][b2[1]]->~Objeto();
-			mapa[b2[0]][b2[1]] = new Explosion(b2[0], b2[1], Movimiento::NONE, false);
+			mapa[b2[0]][b2[1]] = new Objeto();
+			explosions.push_back(Explosion(b2[0], b2[1], Movimiento::NONE, false));
 			std::vector<std::vector<int>> exps = generateExplosionVector(b2[0], b2[1]);
 			for (int n = 1; n <= exps[0][0]; n++)
 			{
-				mapa[b2[0]][b2[1] - n]->~Objeto();
-				mapa[b2[0]][b2[1] - n] = new Explosion(b2[0], b2[1] - n, Movimiento::UP, (n == exps[0][0] && exps[1][0] == -1));
+				explosions.push_back(Explosion(b2[0], b2[1] - n, Movimiento::UP, (n == exps[0][0] && exps[1][0] == -1)));
 			}
 			for (int n = 1; n <= exps[0][1]; n++)
 			{
-				mapa[b2[0]][b2[1] + n]->~Objeto();
-				mapa[b2[0]][b2[1] + n] = new Explosion(b2[0], b2[1] + n, Movimiento::DOWN, (n == exps[0][1] && exps[1][1] == -1));
+				explosions.push_back(Explosion(b2[0], b2[1] + n, Movimiento::DOWN, (n == exps[0][1] && exps[1][1] == -1)));
 			}
 			for (int n = 1; n <= exps[0][2]; n++)
 			{
-				mapa[b2[0] - n][b2[1]]->~Objeto();
-				mapa[b2[0] - n][b2[1]] = new Explosion(b2[0] - n, b2[1], Movimiento::LEFT, (n == exps[0][2] && exps[1][2] == -1));
+				explosions.push_back(Explosion(b2[0] - n, b2[1], Movimiento::LEFT, (n == exps[0][2] && exps[1][2] == -1)));
 			}
 			for (int n = 1; n <= exps[0][3]; n++)
 			{
-				mapa[b2[0] + n][b2[1]]->~Objeto();
-				mapa[b2[0] + n][b2[1]] = new Explosion(b2[0] + n, b2[1], Movimiento::RIGHT, (n == exps[0][3] && exps[1][3] == -1));
+				explosions.push_back(Explosion(b2[0] + n, b2[1], Movimiento::RIGHT, (n == exps[0][3] && exps[1][3] == -1)));
 			}
 			std::cout << exps[1][0] << " " << exps[1][1] << " " << exps[1][2] << " " << exps[1][3] << std::endl;
 			if (exps[1][0] != -1)
