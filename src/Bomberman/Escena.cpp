@@ -11,4 +11,5 @@ Escena::Escena(int width, int height):
 
 Escena::~Escena()
 {
+	Renderer::Instance()->EmptyRenderer();
 }

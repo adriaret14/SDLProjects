@@ -127,8 +127,6 @@ Play::~Play()
 		delete mapa[i];
 	}
 	delete mapa;
-
-	Renderer::Instance()->EmptyRenderer();
 }
 
 void Play::draw()
