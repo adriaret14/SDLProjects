@@ -204,7 +204,7 @@ void Play::update()
 	for (std::vector<Explosion>::iterator it = explosions.begin(); it != explosions.end();)
 	{
 		//Colision con jugador1
-		if (abs(p1.getX() - (it->rect.x)) < CELLW && abs(p1.getY() - (it->rect.y)) < CELLH)
+		if (abs(p1.getX() - (it->pos.x)) < CELLW && abs(p1.getY() - (it->pos.y)) < CELLH)
 		{
 			int v = p1.getVida();
 			p1.hit();
@@ -219,7 +219,7 @@ void Play::update()
 		}
 
 		//Colision con jugador2
-		if (abs(p2.getX() - (it->rect.x)) < CELLW && abs(p2.getY() - (it->rect.y)) < CELLH)
+		if (abs(p2.getX() - (it->pos.x)) < CELLW && abs(p2.getY() - (it->pos.y)) < CELLH)
 		{
 			int v = p2.getVida();
 			p2.hit();

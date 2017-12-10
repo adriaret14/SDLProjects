@@ -223,7 +223,6 @@ void Player::setVida(int n)
 
 int Player::getVida()
 {
-	std::cout << vida << std::endl;
 	return vida;
 }
 
