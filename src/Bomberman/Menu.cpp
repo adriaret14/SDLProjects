@@ -69,6 +69,7 @@ Menu::Menu():
 
 Menu::~Menu()
 {
+	Renderer::Instance()->EmptyRenderer();
 }
 
 void Menu::draw()

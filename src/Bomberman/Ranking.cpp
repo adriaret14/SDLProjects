@@ -25,6 +25,7 @@ Ranking::Ranking():
 
 Ranking::~Ranking()
 {
+	Renderer::Instance()->EmptyRenderer();
 }
 
 void Ranking::draw()
