@@ -201,6 +201,8 @@ void Play::update()
 			}
 		}
 	}
+
+	//Iteramos las explosiones
 	for (std::vector<Explosion>::iterator it = explosions.begin(); it != explosions.end();)
 	{
 		//Colision con jugador1
