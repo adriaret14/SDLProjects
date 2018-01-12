@@ -4,6 +4,7 @@ Dest::Dest( int i, int j ):
 	Objeto( ObjTipo::DEST, i, j, true ),
 	hits(0)
 {
+	std::cout << "dest +1" << std::endl;
 	rect.x = 48;
 	rect.y = 0;
 }

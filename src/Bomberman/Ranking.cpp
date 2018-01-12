@@ -1,7 +1,5 @@
 #include "Ranking.h"
 
-
-
 Ranking::Ranking():
 	Escena::Escena(720, 704)
 {
@@ -21,7 +19,6 @@ Ranking::Ranking():
 	exit.h = aux.y;
 	exitRect = SDL_Rect{ 720 / 2 - (exit.w / 2), 5 * 704 / 6 - (exit.h / 2), exit.w, exit.h };
 }
-
 
 Ranking::~Ranking()
 {
@@ -63,3 +60,11 @@ void Ranking::eHandler()
 		}
 	}
 }
+
+std::list<RankStruct> Ranking::createRankingList()
+{
+	std::list<RankStruct> rankingList;
+	return;
+}
+
+

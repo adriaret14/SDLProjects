@@ -4,6 +4,18 @@
 #pragma once
 
 enum estadoActual {Running, GoToLvl1, GoToLvl2, GoToRank, Exit};
+
+struct RankStruct
+{
+	std::string name;
+	int score;
+
+	bool operator<(const RankStruct &a)const
+	{
+		return score < a.score;
+	}
+};
+
 class Escena
 {
 public:

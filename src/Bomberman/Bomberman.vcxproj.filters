@@ -127,11 +127,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="Map1.xml">
+    <Xml Include="config.xml">
       <Filter>Resource Files</Filter>
     </Xml>
-    <Xml Include="Map2.xml">
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ranking.bin">
       <Filter>Resource Files</Filter>
-    </Xml>
+    </None>
   </ItemGroup>
 </Project>

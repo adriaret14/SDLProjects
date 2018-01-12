@@ -30,6 +30,7 @@ private:
 	MovCheck bombPlacementCheck(Movimiento, Player);
 	std::vector<std::vector<int>> generateExplosionVector(int, int);
 	Objeto* getAdjCell(int, int, int, int);
+	void createRankingBin( int );
 
 	clock_t tiempo;
 	int maxTime;
@@ -48,6 +49,7 @@ private:
 	Objeto ***mapa;
 
 	std::string estado;
+
 	
 };
 

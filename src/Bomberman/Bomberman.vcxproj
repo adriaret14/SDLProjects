@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{D8E9B1FB-BDC6-4F15-827D-B432699133B4}</ProjectGuid>
     <RootNamespace>Bomberman</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -155,10 +155,10 @@
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="Map1.xml">
-      <SubType>Designer</SubType>
-    </Xml>
-    <Xml Include="Map2.xml" />
+    <Xml Include="config.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ranking.bin" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -26,15 +26,7 @@ Play::Play( int num ) :
 
 	//Determinamos el path del xml del mapa
 	std::string mapPath;
-	switch (num)
-	{
-	case 1:
-		mapPath = "Map1.xml";
-		break;
-	case 2:
-		mapPath = "Map2.xml";
-		break;
-	}
+	mapPath = "config.xml";
 	
 	rapidxml::xml_document<> doc;
 	std::ifstream file(mapPath);
@@ -45,56 +37,78 @@ Play::Play( int num ) :
 	doc.parse<0>(&content[0]);
 
 	rapidxml::xml_node<> *pRoot = doc.first_node();
-	rapidxml::xml_node<> *Mat = pRoot->first_node("Matriz");
 
-	//Leemos el tamaño de la matriz del mapa
-	rows = std::stoi(Mat->first_attribute("filas")->value(), nullptr);
-	cols = std::stoi(Mat->first_attribute("columnas")->value(), nullptr);
+	rapidxml::xml_node<> *Level = pRoot->first_node("Level");
+
+	while (std::stoi(Level->first_attribute("id")->value(), nullptr) != num)
+	{
+		Level = Level->next_sibling();
+	}
+	rows = 13;
+	cols = 15;
 
 	//Posiciones de los jugadores
-	p1.setX(BORDER_LEFT + std::stoi(Mat->first_attribute("x1")->value(), nullptr) * CELLW);
-	p1.setY(BORDER_TOP + std::stoi(Mat->first_attribute("y1")->value(), nullptr) * CELLH);
-	p2.setX(BORDER_LEFT + std::stoi(Mat->first_attribute("x2")->value(), nullptr) * CELLW);
-	p2.setY(BORDER_TOP + std::stoi(Mat->first_attribute("y2")->value(), nullptr) * CELLH);
+	if (num == 1)
+	{
+		p1.setX(BORDER_LEFT +  12 * CELLW);
+		p1.setY(BORDER_TOP +  2 * CELLH);
+		p2.setX(BORDER_LEFT +  12 * CELLW);
+		p2.setY(BORDER_TOP +  10 * CELLH);
+	}
+	else if (num == 2)
+	{
+		p1.setX(BORDER_LEFT + 12 *CELLW);
+		p1.setY(BORDER_TOP + 3 *CELLH);
+		p2.setX(BORDER_LEFT + 12 *CELLW);
+		p2.setY(BORDER_TOP + 10 *CELLH);
+	}
 
 	//Vidas de los jugadores
-	p1.setVida(std::stoi(Mat->first_attribute("vidas")->value(), nullptr));
-	p2.setVida(std::stoi(Mat->first_attribute("vidas")->value(), nullptr));
+	p1.setVida(std::stoi(Level->first_attribute("lives")->value(), nullptr));
+	p2.setVida(std::stoi(Level->first_attribute("lives")->value(), nullptr));
 
-	maxTime = std::stoi(Mat->first_attribute("tiempo")->value(), nullptr);
+	maxTime = std::stoi(Level->first_attribute("time")->value(), nullptr);
 	hud.setTime(maxTime);
 
 	//Asignamos el espacio en memoria de la matriz del mapa
 	mapa = new Objeto**[cols];
 	for (int i = 0; i < cols; i++) {
 		mapa[i] = new Objeto*[rows + 1];
+		for (int j = 0; j < rows; j++)
+		{
+			mapa[i][j] = nullptr;
+		}
+	}
+
+	//Creamos los bordes del mapa
+	for (int j = 0; j < rows; j++)
+	{
+		mapa[0][j] = new NoDest(0, j);
+
+		mapa[cols-1][j] = new NoDest(cols-1, j);
+	}
+	for (int i = 1; i < cols - 1; i++)
+	{
+		mapa[i][0] = new NoDest(i, 0);
+		mapa[i][rows - 1] = new NoDest(i, rows - 1);
 	}
 
 	//Creamos los objetos del mapa
-	for (int i = 0; i < cols; i++) {
-		for (int j = 0; j < rows; j++) {
-			rapidxml::xml_node<> *celda = Mat
-				->first_node(("Columna_" + std::to_string(i)).c_str())
-				->first_node(("Celda_" + std::to_string(j)).c_str());
-			std::string s = celda->value();
-			//std::cout << s << std::endl;
-			if (s == "dest")
-			{
-				mapa[i][j] = new Dest(i, j);
-				std::cout << "8";
-			}
-			else if (s == "nodest")
-			{
-				mapa[i][j] = new NoDest(i, j);
-				std::cout << "O";
-			}
-			else
-			{
-				mapa[i][j] = new Objeto();
-				std::cout << " ";
-			}
-		}
-		std::cout << std::endl;
+	rapidxml::xml_node<> *Destructible = Level->first_node("Destructible");
+	for (rapidxml::xml_node<> *Obstacle = Destructible->first_node("Wall"); Obstacle; Obstacle = Obstacle->next_sibling())
+	{
+		int i = std::stoi(Obstacle->first_attribute("i")->value(), nullptr);
+		int j = std::stoi(Obstacle->first_attribute("j")->value(), nullptr);
+
+		mapa[i][j] = new Dest(i, j);
+	}
+	rapidxml::xml_node<> *Fixed = Level->first_node("Fixed");
+	for (rapidxml::xml_node<> *Obstacle = Fixed->first_node("Wall"); Obstacle; Obstacle = Obstacle->next_sibling())
+	{
+		int i = std::stoi(Obstacle->first_attribute("i")->value(), nullptr);
+		int j = std::stoi(Obstacle->first_attribute("j")->value(), nullptr);
+
+		mapa[i][j] = new NoDest(i, j);
 	}
 
 	//Llenamos el unordered map de eventos
@@ -135,6 +149,7 @@ void Play::draw()
 	Renderer::Instance()->PushImage(BG, background);
 	for (int i = 0; i < cols; i++) {
 		for (int j = 0; j < rows; j++) {
+			if (mapa[i][j] == nullptr) mapa[i][j] = new Objeto();
 			mapa[i][j]->draw();
 		}
 	}
@@ -153,6 +168,14 @@ void Play::update()
 	hud.update();
 	if (clock() - tiempo >= CLOCKS_PER_SEC * maxTime)
 	{
+		if (p1.getScore > p2.getScore)
+		{
+			createRankingBin(p1.getScore);
+		}
+		else
+		{
+			createRankingBin(p2.getScore);
+		}		
 		Estado = estadoActual::GoToRank;
 	}
 	for (int i = 0; i < cols; i++)
@@ -216,6 +239,14 @@ void Play::update()
 			}
 			if (p1.getVida() <= 0)
 			{
+				if (p1.getScore > p2.getScore)
+				{
+					createRankingBin(p1.getScore);
+				}
+				else
+				{
+					createRankingBin(p2.getScore);
+				}
 				Estado = estadoActual::GoToRank;
 			}
 		}
@@ -231,6 +262,14 @@ void Play::update()
 			}
 			if (p2.getVida() <= 0)
 			{
+				if (p1.getScore > p2.getScore)
+				{
+					createRankingBin(p1.getScore);
+				}
+				else
+				{
+					createRankingBin(p2.getScore);
+				}
 				Estado = estadoActual::GoToRank;
 			}
 		}
@@ -1377,4 +1416,88 @@ std::vector<std::vector<int>> Play::generateExplosionVector(int i, int j)
 Objeto * Play::getAdjCell(int x, int y, int i, int j)
 {
 	return mapa[(x - BORDER_LEFT - (x - BORDER_LEFT) % CELLW) / CELLW + i][(y - BORDER_TOP - (y - BORDER_TOP) % CELLH) / CELLH + j];
+}
+
+void Play::createRankingBin( int highScore)
+{
+	RankStruct auxStruct;
+	std::list<RankStruct> auxRanking;
+	char auxName[30];
+	int auxScore;
+	std::ifstream rankingBin("../../res/files/ranking.bin", std::ios::in | std::ios::binary);
+	if (!rankingBin.peek() == std::ifstream::traits_type::eof())
+	{
+		//LEER Y GUARDAR
+		for (int i = 0; rankingBin.eof() != true; i++)
+		{
+			rankingBin.read(reinterpret_cast<char *>(&auxName), sizeof(char) * 30);
+			rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
+
+			auxStruct.name = auxName;
+			auxStruct.score = auxScore;
+			auxRanking.push_back(auxStruct);
+		}
+		rankingBin.close();
+		std::string answer1;
+		do
+		{
+			std::cout << "Quieres guardar tu puntuación? (y/n)" << std::endl;
+			std::cin >> answer1;
+			std::cout << std::endl;
+		} while (answer1 != "y" && answer1 != "n" && answer1 != "Y" && answer1 != "N");
+		if (answer1 == "y" || answer1 == "Y")
+		{
+			std::cout << "Tu nombre? (Máximo 30 caracteres)" << std::endl;
+			std::cin >> auxName;
+			std::cout << std::endl;
+			auxScore = highScore;
+
+			auxStruct.name = auxName;
+			auxStruct.score = auxScore;
+
+			if (auxRanking.size == 10)
+			{
+				auxRanking.push_back(auxStruct);
+				auxRanking.sort();
+				auxRanking.reverse();
+				auxRanking.pop_back();
+			}
+			else
+			{
+				auxRanking.push_back(auxStruct);
+				auxRanking.sort();
+				auxRanking.reverse();
+			}
+			std::ofstream rankingBin("../../res/files/ranking.bin", std::ios::out | std::ios::binary);
+			rankingBin.clear();
+			for each (RankStruct rs in auxRanking)
+			{
+				rankingBin.write(reinterpret_cast<char *>(&rs.name), sizeof(char) * 30);
+				rankingBin.write(reinterpret_cast<char *>(&rs.score), sizeof(rs.score));				
+			}
+		}
+	}
+	else
+	{
+		//GUARDADO UNICO
+		rankingBin.close();
+		std::string answer1;
+		do
+		{
+			std::cout << "Quieres guardar tu puntuación? (y/n)" << std::endl;
+			std::cin >> answer1;
+			std::cout << std::endl;
+		} while (answer1 != "y" && answer1 != "n" && answer1 != "Y" && answer1 != "N");
+		if (answer1 == "y" || answer1 == "Y")
+		{
+			std::cout << "Tu nombre? (Máximo 30 caracteres)" << std::endl;
+			std::cin >> auxName;
+			std::cout << std::endl;
+			auxScore = highScore;
+
+			std::ofstream rankingBin("../../res/files/ranking.bin", std::ios::out | std::ios::binary);
+			rankingBin.write(reinterpret_cast<char *>(&auxName), sizeof(char) * 30);
+			rankingBin.write(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
+		}
+	}
 }

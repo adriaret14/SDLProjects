@@ -11,6 +11,8 @@ public:
 	void update() override;
 	void eHandler() override;
 private:
+	std::list<RankStruct> createRankingList();
+
 	SDL_Rect exitRect;
 };
 
