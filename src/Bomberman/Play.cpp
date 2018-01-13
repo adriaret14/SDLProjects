@@ -168,13 +168,13 @@ void Play::update()
 	hud.update();
 	if (clock() - tiempo >= CLOCKS_PER_SEC * maxTime)
 	{
-		if (p1.getScore > p2.getScore)
+		if (p1.getScore() > p2.getScore())
 		{
-			createRankingBin(p1.getScore);
+			createRankingBin(p1.getScore());
 		}
 		else
 		{
-			createRankingBin(p2.getScore);
+			createRankingBin(p2.getScore());
 		}		
 		Estado = estadoActual::GoToRank;
 	}
@@ -239,13 +239,13 @@ void Play::update()
 			}
 			if (p1.getVida() <= 0)
 			{
-				if (p1.getScore > p2.getScore)
+				if (p1.getScore() > p2.getScore())
 				{
-					createRankingBin(p1.getScore);
+					createRankingBin(p1.getScore());
 				}
 				else
 				{
-					createRankingBin(p2.getScore);
+					createRankingBin(p2.getScore());
 				}
 				Estado = estadoActual::GoToRank;
 			}
@@ -262,13 +262,13 @@ void Play::update()
 			}
 			if (p2.getVida() <= 0)
 			{
-				if (p1.getScore > p2.getScore)
+				if (p1.getScore() > p2.getScore())
 				{
-					createRankingBin(p1.getScore);
+					createRankingBin(p1.getScore());
 				}
 				else
 				{
-					createRankingBin(p2.getScore);
+					createRankingBin(p2.getScore());
 				}
 				Estado = estadoActual::GoToRank;
 			}
@@ -1455,7 +1455,7 @@ void Play::createRankingBin( int highScore)
 			auxStruct.name = auxName;
 			auxStruct.score = auxScore;
 
-			if (auxRanking.size == 10)
+			if (auxRanking.size() == 10)
 			{
 				auxRanking.push_back(auxStruct);
 				auxRanking.sort();
