@@ -1475,6 +1475,7 @@ void Play::createRankingBin( int highScore)
 				rankingBin.write(reinterpret_cast<char *>(&rs.name), sizeof(char) * 30);
 				rankingBin.write(reinterpret_cast<char *>(&rs.score), sizeof(rs.score));				
 			}
+			rankingBin.close();
 		}
 	}
 	else
@@ -1498,6 +1499,7 @@ void Play::createRankingBin( int highScore)
 			std::ofstream rankingBin("../../res/files/ranking.bin", std::ios::out | std::ios::binary);
 			rankingBin.write(reinterpret_cast<char *>(&auxName), sizeof(char) * 30);
 			rankingBin.write(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
+			rankingBin.close();
 		}
 	}
 }
