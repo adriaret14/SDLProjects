@@ -1419,10 +1419,10 @@ Objeto * Play::getAdjCell(int x, int y, int i, int j)
 }
 
 void Play::createRankingBin( int highScore)
-{
+ {
 	RankStruct auxStruct;
 	std::list<RankStruct> auxRanking;
-	char auxName[30];
+	char auxName[10];
 	int auxScore;
 	std::ifstream rankingBin("../../res/files/ranking.bin", std::ios::in | std::ios::binary);
 	if (!rankingBin.peek() == std::ifstream::traits_type::eof())
@@ -1430,7 +1430,7 @@ void Play::createRankingBin( int highScore)
 		//LEER Y GUARDAR
 		for (int i = 0; rankingBin.eof() != true; i++)
 		{
-			rankingBin.read(reinterpret_cast<char *>(&auxName), sizeof(char) * 30);
+			rankingBin.read(reinterpret_cast<char *>(&auxName), sizeof(char) * 10);
 			rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
 
 			auxStruct.name = auxName;
@@ -1441,13 +1441,13 @@ void Play::createRankingBin( int highScore)
 		std::string answer1;
 		do
 		{
-			std::cout << "Quieres guardar tu puntuación? (y/n)" << std::endl;
+			std::cout << "Quieres guardar tu puntuacion? (y/n)" << std::endl;
 			std::cin >> answer1;
 			std::cout << std::endl;
 		} while (answer1 != "y" && answer1 != "n" && answer1 != "Y" && answer1 != "N");
 		if (answer1 == "y" || answer1 == "Y")
 		{
-			std::cout << "Tu nombre? (Máximo 30 caracteres)" << std::endl;
+			std::cout << "Tu nombre? (Maximo 10 caracteres alfabeticos)" << std::endl;
 			std::cin >> auxName;
 			std::cout << std::endl;
 			auxScore = highScore;
@@ -1468,11 +1468,11 @@ void Play::createRankingBin( int highScore)
 				auxRanking.sort();
 				auxRanking.reverse();
 			}
-			std::ofstream rankingBin("../../res/files/ranking.bin", std::ios::out | std::ios::binary);
+			std::ofstream rankingBin("ranking.bin", std::ios::out | std::ios::binary);
 			rankingBin.clear();
 			for each (RankStruct rs in auxRanking)
 			{
-				rankingBin.write(reinterpret_cast<char *>(&rs.name), sizeof(char) * 30);
+				rankingBin.write(reinterpret_cast<char *>(&rs.name), sizeof(char) * 10);
 				rankingBin.write(reinterpret_cast<char *>(&rs.score), sizeof(rs.score));				
 			}
 			rankingBin.close();
@@ -1496,8 +1496,8 @@ void Play::createRankingBin( int highScore)
 			std::cout << std::endl;
 			auxScore = highScore;
 
-			std::ofstream rankingBin("../../res/files/ranking.bin", std::ios::out | std::ios::binary);
-			rankingBin.write(reinterpret_cast<char *>(&auxName), sizeof(char) * 30);
+			std::ofstream rankingBin("ranking.bin", std::ios::out | std::ios::binary);
+			rankingBin.write(reinterpret_cast<char *>(&auxName), sizeof(char) * 10);
 			rankingBin.write(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
 			rankingBin.close();
 		}

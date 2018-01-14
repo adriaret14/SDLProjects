@@ -39,7 +39,32 @@ Ranking::Ranking():
 	topTen.h = aux.y;
 	topTenRect = SDL_Rect{ 720 / 2 - (topTen.w / 2), 10, topTen.w, topTen.h };
 
-	std::vector<RankStruct> rankingList = createRankingList();
+	std::vector<RankStruct> rankingList;
+	RankStruct auxStruct;
+	char auxName[30];
+	int auxScore;
+	int i = 0;
+	std::ifstream rankingBin("ranking.bin", std::ios::in | std::ios::binary);
+
+	for (int j = 0; rankingBin.eof() != true; j++)
+	{
+		rankingBin.read(reinterpret_cast<char *>(&auxName), sizeof(char) * 10);
+		rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
+
+		auxStruct.name = auxName;
+		auxStruct.score = auxScore;
+		rankingList.push_back(auxStruct);
+		i++;
+	}
+	rankingBin.close();
+
+	auxStruct.name = "----";
+	auxStruct.score = 0;
+	while (i < 10)
+	{
+		rankingList.push_back(auxStruct);
+		i++;
+	}
 
 	for (int i = 1; i <= 10; i++)
 	{
@@ -74,6 +99,8 @@ Ranking::Ranking():
 		posScore.h = 40;
 		posScore.w = aux.x * (posScore.h / aux.y);
 		rectStruct.scoreRect = SDL_Rect{ posNum.w + 15 + (i < 6) ? 60 : (720 / 2 + 15), 50 + ((704 - 120) / 5) * ((i % 6) - ((i < 6) ? 1 : 0)) + 50, posScore.w, posScore.h };
+
+		rankRects.push_back(rectStruct);
 	}
 }
 
@@ -90,6 +117,8 @@ void Ranking::draw()
 	for (int i = 0; i < 10; i++)
 	{
 		Renderer::Instance()->PushImage("POS_" + std::to_string(i + 1) + "_NUM", rankNums[i]);
+		Renderer::Instance()->PushImage("POS_" + std::to_string(i + 1) + "_NAME", rankRects[i].nameRect);
+		Renderer::Instance()->PushImage("POS_" + std::to_string(i + 1) + "_SCORE", rankRects[i].scoreRect);
 	}
 	Renderer::Instance()->Render();
 }
@@ -142,6 +171,8 @@ std::vector<RankStruct> Ranking::createRankingList()
 		rankingList.push_back(auxStruct);
 		i++;
 	}
+	rankingBin.close();
+
 	auxStruct.name = "----";
 	auxStruct.score = 0;
 	while (i < 10)
@@ -149,7 +180,7 @@ std::vector<RankStruct> Ranking::createRankingList()
 		rankingList.push_back(auxStruct);
 		i++;
 	}
-	rankingBin.close();
+	
 	return rankingList;
 }
 
