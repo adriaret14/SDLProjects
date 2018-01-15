@@ -9,6 +9,7 @@
 #include "Explosion.h"
 #include "HUD.h"
 #include <iostream>
+#include <fstream>
 #include <unordered_map>
 
 enum class MovCheck {RED, GREEN, CORRECTION};

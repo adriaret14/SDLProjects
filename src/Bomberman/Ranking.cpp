@@ -39,8 +39,9 @@ Ranking::Ranking():
 	topTen.h = aux.y;
 	topTenRect = SDL_Rect{ 720 / 2 - (topTen.w / 2), 10, topTen.w, topTen.h };
 
-	std::vector<RankStruct> rankingList;
-	RankStruct auxStruct;
+	std::vector<RankStruct> rankingVector = createRankingList();
+
+	/*RankStruct auxStruct;
 	char auxName[30];
 	int auxScore;
 	int i = 0;
@@ -64,7 +65,7 @@ Ranking::Ranking():
 	{
 		rankingList.push_back(auxStruct);
 		i++;
-	}
+	}*/
 
 	for (int i = 1; i <= 10; i++)
 	{
@@ -83,7 +84,7 @@ Ranking::Ranking():
 		Text posName;
 		posName.color = Color{ 0, 0, 0, 0 };
 		posName.id = "POS_" + std::to_string(i) + "_NAME";
-		posName.text = rankingList[i - 1].name;
+		posName.text = rankingVector[i - 1].name;
 		Renderer::Instance()->LoadTextureText(fText.id, posName);
 		aux = Renderer::Instance()->GetTextureSize(posName.id);
 		posName.h = 40;
@@ -93,7 +94,7 @@ Ranking::Ranking():
 		Text posScore;
 		posScore.color = Color{ 0, 0, 0, 0 };
 		posScore.id = "POS_" + std::to_string(i) + "_SCORE";
-		posScore.text = ((rankingList[i-1].score < 0) ? "----" : std::to_string(rankingList[i - 1].score));
+		posScore.text = ((rankingVector[i-1].score < 0) ? "----" : std::to_string(rankingVector[i - 1].score));
 		Renderer::Instance()->LoadTextureText(fNums.id, posScore);
 		aux = Renderer::Instance()->GetTextureSize(posScore.id);
 		posScore.h = 40;
@@ -156,14 +157,21 @@ std::vector<RankStruct> Ranking::createRankingList()
 {
 	std::vector<RankStruct> rankingList;
 	RankStruct auxStruct;
-	char auxName[30];
+	std::string auxName;
 	int auxScore;
 	int i = 0;
-	std::ifstream rankingBin("../../res/files/ranking.bin", std::ios::in | std::ios::binary);
+	std::ifstream rankingBin("ranking.bin", std::ios::in | std::ios::binary);
 
 	while (!rankingBin.eof())
 	{
-		rankingBin.read(reinterpret_cast<char *>(&auxName), sizeof(char) * 30);
+		size_t stringSize;
+		rankingBin.read(reinterpret_cast<char *>(&stringSize), sizeof(size_t));
+		char* a = new char[stringSize + 1];
+		rankingBin.read(a, stringSize);
+		a[stringSize] = '\0';
+		auxName = a;
+		delete[] a;
+
 		rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
 
 		auxStruct.name = auxName;
@@ -174,7 +182,7 @@ std::vector<RankStruct> Ranking::createRankingList()
 	rankingBin.close();
 
 	auxStruct.name = "----";
-	auxStruct.score = 0;
+	auxStruct.score = -1;
 	while (i < 10)
 	{
 		rankingList.push_back(auxStruct);

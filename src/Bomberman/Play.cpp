@@ -177,6 +177,7 @@ void Play::update()
 			createRankingBin(p2.getScore());
 		}		
 		Estado = estadoActual::GoToRank;
+		return;
 	}
 	for (int i = 0; i < cols; i++)
 	{
@@ -248,6 +249,7 @@ void Play::update()
 					createRankingBin(p2.getScore());
 				}
 				Estado = estadoActual::GoToRank;
+				return;
 			}
 		}
 
@@ -271,6 +273,7 @@ void Play::update()
 					createRankingBin(p2.getScore());
 				}
 				Estado = estadoActual::GoToRank;
+				return;
 			}
 		}
 
@@ -1422,15 +1425,27 @@ void Play::createRankingBin( int highScore)
  {
 	RankStruct auxStruct;
 	std::list<RankStruct> auxRanking;
-	char auxName[10];
+	//char auxName[10];
+	size_t stringSize;
+	std::string auxName;
 	int auxScore;
-	std::ifstream rankingBin("../../res/files/ranking.bin", std::ios::in | std::ios::binary);
-	if (!rankingBin.peek() == std::ifstream::traits_type::eof())
+
+	std::ifstream rankingBin("ranking.bin", std::ios::in | std::ios::binary);
+	rankingBin.seekg(0, SEEK_END);
+	if ((bool)rankingBin.tellg())
 	{
+		rankingBin.seekg(0, SEEK_SET);
+
 		//LEER Y GUARDAR
-		for (int i = 0; rankingBin.eof() != true; i++)
+		while (!rankingBin.eof())
 		{
-			rankingBin.read(reinterpret_cast<char *>(&auxName), sizeof(char) * 10);
+			rankingBin.read(reinterpret_cast<char *>(&stringSize), sizeof(size_t));
+			char* a = new char[stringSize + 1];
+			rankingBin.read(a, stringSize);
+			a[stringSize] = '\0';
+			auxName = a;
+			delete[] a;
+
 			rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
 
 			auxStruct.name = auxName;
@@ -1469,10 +1484,11 @@ void Play::createRankingBin( int highScore)
 				auxRanking.reverse();
 			}
 			std::ofstream rankingBin("ranking.bin", std::ios::out | std::ios::binary);
-			rankingBin.clear();
 			for each (RankStruct rs in auxRanking)
 			{
-				rankingBin.write(reinterpret_cast<char *>(&rs.name), sizeof(char) * 10);
+				size_t stringSize = rs.name.size();
+				rankingBin.write(reinterpret_cast<char*>(stringSize), sizeof(size_t));
+				rankingBin.write(rs.name.c_str(), rs.name.size());
 				rankingBin.write(reinterpret_cast<char *>(&rs.score), sizeof(rs.score));				
 			}
 			rankingBin.close();
@@ -1480,8 +1496,8 @@ void Play::createRankingBin( int highScore)
 	}
 	else
 	{
-		//GUARDADO UNICO
 		rankingBin.close();
+		//GUARDADO UNICO
 		std::string answer1;
 		do
 		{
@@ -1497,7 +1513,10 @@ void Play::createRankingBin( int highScore)
 			auxScore = highScore;
 
 			std::ofstream rankingBin("ranking.bin", std::ios::out | std::ios::binary);
-			rankingBin.write(reinterpret_cast<char *>(&auxName), sizeof(char) * 10);
+
+			size_t stringSize = auxName.size();
+			rankingBin.write(reinterpret_cast<char *>(&stringSize), sizeof(size_t));
+			rankingBin.write(auxName.c_str(), auxName.size());
 			rankingBin.write(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
 			rankingBin.close();
 		}
