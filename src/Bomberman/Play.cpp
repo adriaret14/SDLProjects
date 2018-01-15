@@ -1485,13 +1485,13 @@ void Play::createRankingBin( int highScore)
 		std::string answer1;
 		do
 		{
-			std::cout << "Quieres guardar tu puntuación? (y/n)" << std::endl;
+			std::cout << "Quieres guardar tu puntuacion? (y/n)" << std::endl;
 			std::cin >> answer1;
 			std::cout << std::endl;
 		} while (answer1 != "y" && answer1 != "n" && answer1 != "Y" && answer1 != "N");
 		if (answer1 == "y" || answer1 == "Y")
 		{
-			std::cout << "Tu nombre? (Máximo 30 caracteres)" << std::endl;
+			std::cout << "Tu nombre? (Maximo 10 caracteres)" << std::endl;
 			std::cin >> auxName;
 			std::cout << std::endl;
 			auxScore = highScore;

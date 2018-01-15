@@ -59,7 +59,7 @@ Ranking::Ranking():
 	rankingBin.close();
 
 	auxStruct.name = "----";
-	auxStruct.score = 0;
+	auxStruct.score = -1;
 	while (i < 10)
 	{
 		rankingList.push_back(auxStruct);
@@ -87,18 +87,18 @@ Ranking::Ranking():
 		Renderer::Instance()->LoadTextureText(fText.id, posName);
 		aux = Renderer::Instance()->GetTextureSize(posName.id);
 		posName.h = 40;
-		posName.w = aux.x * (posName.h/aux.y);
-		rectStruct.nameRect = SDL_Rect{ posNum.w + 15 + (i < 6) ? 60 : (720 / 2 + 15), 5 + ((704 - 120) / 5) * ((i % 6) - ((i < 6) ? 1 : 0)) + 50, posName.w, posName.h };
+		posName.w = aux.x * posName.h / aux.y;
+		rectStruct.nameRect = SDL_Rect{ posNum.w + 15 + ((i < 6) ? 60 : (720 / 2 + 15)), 25 + (((704 - 120) / 5) * ((i % 6) - ((i < 6) ? 1 : 0)) + 50), posName.w, posName.h };
 
 		Text posScore;
 		posScore.color = Color{ 0, 0, 0, 0 };
 		posScore.id = "POS_" + std::to_string(i) + "_SCORE";
-		posScore.text = std::to_string(rankingList[i - 1].score);
+		posScore.text = ((rankingList[i-1].score < 0) ? "----" : std::to_string(rankingList[i - 1].score));
 		Renderer::Instance()->LoadTextureText(fNums.id, posScore);
 		aux = Renderer::Instance()->GetTextureSize(posScore.id);
 		posScore.h = 40;
-		posScore.w = aux.x * (posScore.h / aux.y);
-		rectStruct.scoreRect = SDL_Rect{ posNum.w + 15 + (i < 6) ? 60 : (720 / 2 + 15), 50 + ((704 - 120) / 5) * ((i % 6) - ((i < 6) ? 1 : 0)) + 50, posScore.w, posScore.h };
+		posScore.w = aux.x * posScore.h / aux.y;
+		rectStruct.scoreRect = SDL_Rect{ posNum.w + 15 + ((i < 6) ? 60 : (720 / 2 + 15)), 50 + (((704 - 120) / 5) * ((i % 6) - ((i < 6) ? 1 : 0)) + 50), posScore.w, posScore.h };
 
 		rankRects.push_back(rectStruct);
 	}
