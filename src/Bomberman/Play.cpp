@@ -1423,102 +1423,80 @@ Objeto * Play::getAdjCell(int x, int y, int i, int j)
 
 void Play::createRankingBin( int highScore)
  {
-	RankStruct auxStruct;
-	std::list<RankStruct> auxRanking;
-	//char auxName[10];
-	size_t stringSize;
-	std::string auxName;
-	int auxScore;
+	std::string playerName;
+	int playerScore;
 
-	std::ifstream rankingBin("ranking.bin", std::ios::in | std::ios::binary);
-	rankingBin.seekg(0, SEEK_END);
-	if ((bool)rankingBin.tellg())
+	std::string ans1;
+	do {
+		std::cout << "Guardar la puntuacion del ganador? (y/n)" << std::endl;
+		std::cin >> ans1;
+	} while (ans1 != "y" && ans1 != "Y" && ans1 != "n" && ans1 != "N");
+	if (ans1 == "y" || "Y")
 	{
-		rankingBin.seekg(0, SEEK_SET);
-
-		//LEER Y GUARDAR
-		while (!rankingBin.eof())
+		do
 		{
+			std::cout << "Cual es tu nombre? (maximo 10 caracteres alfabeticos)" << std::endl;
+			std::cin >> playerName;
+		} while (playerName.size() > 10);
+
+		playerScore = highScore;
+
+		RankStruct auxStruct;
+		std::list<RankStruct> auxRanking;
+		size_t stringSize;
+		std::string auxName;
+		int auxScore;
+
+		std::ifstream rankingBin("ranking.bin", std::ios::in | std::ios::binary);
+
+		rankingBin.seekg(0, std::ios::end);
+		int size = (int)rankingBin.tellg();
+		rankingBin.seekg(0, std::ios::beg);
+		
+		while (/*rankingBin.tellg() < size*/true)
+		{
+			if (!rankingBin) break;
+			rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(int));
+			size_t stringSize = 0;
 			rankingBin.read(reinterpret_cast<char *>(&stringSize), sizeof(size_t));
-			char* a = new char[stringSize + 1];
-			rankingBin.read(a, stringSize);
-			a[stringSize] = '\0';
-			auxName = a;
-			delete[] a;
-
-			rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
+			char* temp = new char[stringSize + 1];
+			rankingBin.read(temp, stringSize);
+			temp[stringSize] = '\0';
+			auxName = temp;
+			delete[]temp;
 
 			auxStruct.name = auxName;
 			auxStruct.score = auxScore;
+			auxRanking.push_back(auxStruct);			
+		}
+		rankingBin.close();
+
+		auxStruct.name = playerName;
+		auxStruct.score = playerScore;
+
+		if (auxRanking.size() == 10)
+		{
 			auxRanking.push_back(auxStruct);
+			auxRanking.sort();
+			auxRanking.reverse();
+			auxRanking.pop_back();
 		}
-		rankingBin.close();
-		std::string answer1;
-		do
+		else
 		{
-			std::cout << "Quieres guardar tu puntuacion? (y/n)" << std::endl;
-			std::cin >> answer1;
-			std::cout << std::endl;
-		} while (answer1 != "y" && answer1 != "n" && answer1 != "Y" && answer1 != "N");
-		if (answer1 == "y" || answer1 == "Y")
-		{
-			std::cout << "Tu nombre? (Maximo 10 caracteres alfabeticos)" << std::endl;
-			std::cin >> auxName;
-			std::cout << std::endl;
-			auxScore = highScore;
-
-			auxStruct.name = auxName;
-			auxStruct.score = auxScore;
-
-			if (auxRanking.size() == 10)
-			{
-				auxRanking.push_back(auxStruct);
-				auxRanking.sort();
-				auxRanking.reverse();
-				auxRanking.pop_back();
-			}
-			else
-			{
-				auxRanking.push_back(auxStruct);
-				auxRanking.sort();
-				auxRanking.reverse();
-			}
-			std::ofstream rankingBin("ranking.bin", std::ios::out | std::ios::binary);
-			for each (RankStruct rs in auxRanking)
-			{
-				size_t stringSize = rs.name.size();
-				rankingBin.write(reinterpret_cast<char*>(stringSize), sizeof(size_t));
-				rankingBin.write(rs.name.c_str(), rs.name.size());
-				rankingBin.write(reinterpret_cast<char *>(&rs.score), sizeof(rs.score));				
-			}
-			rankingBin.close();
+			auxRanking.push_back(auxStruct);
+			auxRanking.sort();
+			auxRanking.reverse();
 		}
-	}
-	else
-	{
-		rankingBin.close();
-		//GUARDADO UNICO
-		std::string answer1;
-		do
-		{
-			std::cout << "Quieres guardar tu puntuacion? (y/n)" << std::endl;
-			std::cin >> answer1;
-			std::cout << std::endl;
-		} while (answer1 != "y" && answer1 != "n" && answer1 != "Y" && answer1 != "N");
-		if (answer1 == "y" || answer1 == "Y")
-		{
-			std::cout << "Tu nombre? (Maximo 10 caracteres)" << std::endl;
-			std::cin >> auxName;
-			std::cout << std::endl;
-			auxScore = highScore;
 
-			std::ofstream rankingBin("ranking.bin", std::ios::out | std::ios::binary);
+		std::ofstream fsalida("ranking.bin", std::ios::out | std::ios::binary);
 
-			size_t stringSize = auxName.size();
-			rankingBin.write(reinterpret_cast<char *>(&stringSize), sizeof(size_t));
-			rankingBin.write(auxName.c_str(), auxName.size());
-			rankingBin.write(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
-			rankingBin.close();
+		for each (RankStruct auxStruct2 in auxRanking)
+		{
+			size_t len = auxStruct.name.size();
+			fsalida.write(reinterpret_cast<char *>(&auxStruct2.score), sizeof(auxStruct.score));
+			fsalida.write(reinterpret_cast<char *>(&len), sizeof(size_t));
+			fsalida.write(auxStruct2.name.c_str(), auxStruct2.name.size());
 		}
+		fsalida.close();
 	}
 }

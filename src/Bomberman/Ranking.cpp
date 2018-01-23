@@ -41,32 +41,6 @@ Ranking::Ranking():
 
 	std::vector<RankStruct> rankingVector = createRankingList();
 
-	/*RankStruct auxStruct;
-	char auxName[30];
-	int auxScore;
-	int i = 0;
-	std::ifstream rankingBin("ranking.bin", std::ios::in | std::ios::binary);
-
-	for (int j = 0; rankingBin.eof() != true; j++)
-	{
-		rankingBin.read(reinterpret_cast<char *>(&auxName), sizeof(char) * 10);
-		rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
-
-		auxStruct.name = auxName;
-		auxStruct.score = auxScore;
-		rankingList.push_back(auxStruct);
-		i++;
-	}
-	rankingBin.close();
-
-	auxStruct.name = "----";
-	auxStruct.score = -1;
-	while (i < 10)
-	{
-		rankingList.push_back(auxStruct);
-		i++;
-	}*/
-
 	for (int i = 1; i <= 10; i++)
 	{
 		Text posNum;
@@ -162,22 +136,26 @@ std::vector<RankStruct> Ranking::createRankingList()
 	int i = 0;
 	std::ifstream rankingBin("ranking.bin", std::ios::in | std::ios::binary);
 
-	while (!rankingBin.eof())
-	{
-		size_t stringSize;
-		rankingBin.read(reinterpret_cast<char *>(&stringSize), sizeof(size_t));
-		char* a = new char[stringSize + 1];
-		rankingBin.read(a, stringSize);
-		a[stringSize] = '\0';
-		auxName = a;
-		delete[] a;
+	rankingBin.seekg(0, std::ios::end);
+	int size = (int)rankingBin.tellg();
+	rankingBin.seekg(0, std::ios::beg);
 
+	while (/*rankingBin.tellg() < size*/ true)
+	{
+		if (!rankingBin) break;
 		rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
+		size_t stringSize = 0;
+		rankingBin.read(reinterpret_cast<char *>(&stringSize), sizeof(size_t));
+		char* temp = new char[stringSize + 1];
+		rankingBin.read(temp, stringSize);
+		temp[stringSize] = '\0';
+		auxName = temp;
+		delete[]temp;
 
 		auxStruct.name = auxName;
 		auxStruct.score = auxScore;
 		rankingList.push_back(auxStruct);
-		i++;
+		i++;		
 	}
 	rankingBin.close();
 
