@@ -1423,8 +1423,7 @@ Objeto * Play::getAdjCell(int x, int y, int i, int j)
 
 void Play::createRankingBin( int highScore)
  {
-	std::string playerName;
-	int playerScore;
+	std::string cadena;
 
 	std::string ans1;
 	do {
@@ -1436,67 +1435,64 @@ void Play::createRankingBin( int highScore)
 		do
 		{
 			std::cout << "Cual es tu nombre? (maximo 10 caracteres alfabeticos)" << std::endl;
-			std::cin >> playerName;
-		} while (playerName.size() > 10);
+			std::cin >> cadena;
+		} while (cadena.size() > 10);
 
-		playerScore = highScore;
+		size_t longi = cadena.size();
 
-		RankStruct auxStruct;
-		std::list<RankStruct> auxRanking;
-		size_t stringSize;
-		std::string auxName;
-		int auxScore;
+		std::ifstream fentrada("ranking.bin", std::ios::in | std::ios::binary);
 
-		std::ifstream rankingBin("ranking.bin", std::ios::in | std::ios::binary);
+		fentrada.seekg(0, std::ios::end);
+		int size = (int)fentrada.tellg();
+		fentrada.seekg(0, std::ios::beg);
 
-		rankingBin.seekg(0, std::ios::end);
-		int size = (int)rankingBin.tellg();
-		rankingBin.seekg(0, std::ios::beg);
-		
-		while (/*rankingBin.tellg() < size*/true)
+		std::list<RankStruct> auxR;
+		int aux1;
+		size_t aux2;
+		std::string aux3;
+
+		while (fentrada.tellg() < size)
 		{
-			if (!rankingBin) break;
-			rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(int));
-			size_t stringSize = 0;
-			rankingBin.read(reinterpret_cast<char *>(&stringSize), sizeof(size_t));
-			char* temp = new char[stringSize + 1];
-			rankingBin.read(temp, stringSize);
-			temp[stringSize] = '\0';
-			auxName = temp;
-			delete[]temp;
+			fentrada.read(reinterpret_cast<char *>(&aux1), sizeof(int));
+			fentrada.read(reinterpret_cast<char *>(&aux2), sizeof(size_t));
+			char * temp = new char[aux2 + 1];
+			fentrada.read(temp, aux2);
+			temp[aux2] = '\0';
+			aux3 = temp;
+			delete[] temp;
 
-			auxStruct.name = auxName;
-			auxStruct.score = auxScore;
-			auxRanking.push_back(auxStruct);			
+			RankStruct auxS;
+			auxS.name = aux3;
+			auxS.score = aux1;
+			auxR.push_back(auxS);
 		}
-		rankingBin.close();
 
-		auxStruct.name = playerName;
-		auxStruct.score = playerScore;
+		fentrada.close();
 
-		if (auxRanking.size() == 10)
+		RankStruct auxS2;
+		auxS2.name = cadena;
+		auxS2.score = highScore;
+
+		auxR.push_back(auxS2);
+
+		auxR.sort();
+		auxR.reverse();
+
+		if (auxR.size() > 10)
 		{
-			auxRanking.push_back(auxStruct);
-			auxRanking.sort();
-			auxRanking.reverse();
-			auxRanking.pop_back();
-		}
-		else
-		{
-			auxRanking.push_back(auxStruct);
-			auxRanking.sort();
-			auxRanking.reverse();
+			auxR.pop_back();
 		}
 
 		std::ofstream fsalida("ranking.bin", std::ios::out | std::ios::binary);
 
-		for each (RankStruct auxStruct2 in auxRanking)
+		for each (RankStruct auxStruct2 in auxR)
 		{
-			size_t len = auxStruct.name.size();
-			fsalida.write(reinterpret_cast<char *>(&auxStruct2.score), sizeof(auxStruct.score));
+			size_t len = auxStruct2.name.size();
+			fsalida.write(reinterpret_cast<char *>(&auxStruct2.score), sizeof(auxStruct2.score));
 			fsalida.write(reinterpret_cast<char *>(&len), sizeof(size_t));
 			fsalida.write(auxStruct2.name.c_str(), auxStruct2.name.size());
 		}
+
 		fsalida.close();
 	}
 }

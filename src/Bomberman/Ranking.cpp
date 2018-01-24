@@ -129,45 +129,87 @@ void Ranking::eHandler()
 
 std::vector<RankStruct> Ranking::createRankingList()
 {
-	std::vector<RankStruct> rankingList;
-	RankStruct auxStruct;
-	std::string auxName;
-	int auxScore;
+
+	std::vector<RankStruct> auxV;
+	RankStruct auxS;
+	std::string auxN;
+	int auxP;
+	size_t longi;
 	int i = 0;
-	std::ifstream rankingBin("ranking.bin", std::ios::in | std::ios::binary);
+	
 
-	rankingBin.seekg(0, std::ios::end);
-	int size = (int)rankingBin.tellg();
-	rankingBin.seekg(0, std::ios::beg);
+	std::ifstream fentrada("ranking.bin", std::ios::in | std::ios::binary);
 
-	while (/*rankingBin.tellg() < size*/ true)
+	fentrada.seekg(0, std::ios::end);
+	int size = (int)fentrada.tellg();
+	fentrada.seekg(0, std::ios::beg);
+
+	while(fentrada.tellg()<size)
 	{
-		if (!rankingBin) break;
-		rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
-		size_t stringSize = 0;
-		rankingBin.read(reinterpret_cast<char *>(&stringSize), sizeof(size_t));
-		char* temp = new char[stringSize + 1];
-		rankingBin.read(temp, stringSize);
-		temp[stringSize] = '\0';
-		auxName = temp;
-		delete[]temp;
+		fentrada.read(reinterpret_cast<char *>(&auxP), sizeof(int));
+		fentrada.read(reinterpret_cast<char *>(&longi), sizeof(size_t));
+		char * temp = new char[longi + 1];
+		fentrada.read(temp, longi);
+		temp[longi] = '\0';
+		auxN = temp;
+		delete[] temp;
 
-		auxStruct.name = auxName;
-		auxStruct.score = auxScore;
-		rankingList.push_back(auxStruct);
-		i++;		
-	}
-	rankingBin.close();
+		auxS.name = auxN;
+		auxS.score = auxP;
 
-	auxStruct.name = "----";
-	auxStruct.score = -1;
-	while (i < 10)
-	{
-		rankingList.push_back(auxStruct);
+		auxV.push_back(auxS);
 		i++;
 	}
+	fentrada.close();
+
+	auxS.name = "----";
+	auxS.score = -1;
+	while (i < 10)
+	{
+		auxV.push_back(auxS);
+		i++;
+	}
+
+
+	//std::vector<RankStruct> rankingList;
+	//RankStruct auxStruct;
+	//std::string auxName;
+	//int auxScore;
+	//int i = 0;
+	//std::ifstream rankingBin("ranking.bin", std::ios::in | std::ios::binary);
+
+	//rankingBin.seekg(0, std::ios::end);
+	//int size = (int)rankingBin.tellg();
+	//rankingBin.seekg(0, std::ios::beg);
+
+	//while (/*rankingBin.tellg() < size*/ true)
+	//{
+	//	if (!rankingBin) break;
+	//	rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
+	//	size_t stringSize = 0;
+	//	rankingBin.read(reinterpret_cast<char *>(&stringSize), sizeof(size_t));
+	//	char* temp = new char[stringSize + 1];
+	//	rankingBin.read(temp, stringSize);
+	//	temp[stringSize] = '\0';
+	//	auxName = temp;
+	//	delete[]temp;
+
+	//	auxStruct.name = auxName;
+	//	auxStruct.score = auxScore;
+	//	rankingList.push_back(auxStruct);
+	//	i++;		
+	//}
+	//rankingBin.close();
+
+	//auxStruct.name = "----";
+	//auxStruct.score = -1;
+	//while (i < 10)
+	//{
+	//	rankingList.push_back(auxStruct);
+	//	i++;
+	//}
 	
-	return rankingList;
+	return auxV;
 }
 
 
