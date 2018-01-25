@@ -69,7 +69,7 @@
 			<Wall i="9" j="11"/>
 		</Fixed>
 	</Level>
-		<Level id="2" time="1" lives="1">
+		<Level id="2" time="25" lives="1">
 		<Fixed>
 			<Wall i="2" j="1"/>
 			<Wall i="2" j="3"/>
