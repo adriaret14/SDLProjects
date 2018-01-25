@@ -170,45 +170,6 @@ std::vector<RankStruct> Ranking::createRankingList()
 		i++;
 	}
 
-
-	//std::vector<RankStruct> rankingList;
-	//RankStruct auxStruct;
-	//std::string auxName;
-	//int auxScore;
-	//int i = 0;
-	//std::ifstream rankingBin("ranking.bin", std::ios::in | std::ios::binary);
-
-	//rankingBin.seekg(0, std::ios::end);
-	//int size = (int)rankingBin.tellg();
-	//rankingBin.seekg(0, std::ios::beg);
-
-	//while (/*rankingBin.tellg() < size*/ true)
-	//{
-	//	if (!rankingBin) break;
-	//	rankingBin.read(reinterpret_cast<char *>(&auxScore), sizeof(auxScore));
-	//	size_t stringSize = 0;
-	//	rankingBin.read(reinterpret_cast<char *>(&stringSize), sizeof(size_t));
-	//	char* temp = new char[stringSize + 1];
-	//	rankingBin.read(temp, stringSize);
-	//	temp[stringSize] = '\0';
-	//	auxName = temp;
-	//	delete[]temp;
-
-	//	auxStruct.name = auxName;
-	//	auxStruct.score = auxScore;
-	//	rankingList.push_back(auxStruct);
-	//	i++;		
-	//}
-	//rankingBin.close();
-
-	//auxStruct.name = "----";
-	//auxStruct.score = -1;
-	//while (i < 10)
-	//{
-	//	rankingList.push_back(auxStruct);
-	//	i++;
-	//}
-	
 	return auxV;
 }
 

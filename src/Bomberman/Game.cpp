@@ -44,11 +44,16 @@ void Game::update()
 			esc = escenaActual::Ranking;
 			break;
 		case estadoActual::Exit:
-			if (esc == escenaActual::Ranking || esc ==escenaActual::Play)
+			if (esc == escenaActual::Ranking || esc == escenaActual::Play)
 			{
 				escena->~Escena();
 				escena = new Menu();
 				esc = escenaActual::Menu;
+			}
+			else
+			{
+				escena->~Escena();
+				exit(0);
 			}
 			break;
 		}
